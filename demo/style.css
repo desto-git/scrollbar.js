@@ -1,0 +1,31 @@
+body {
+	margin: 0;
+	text-align: center;
+}
+
+img { display: block; }
+
+h1 {
+	background: #CCC;
+	margin: 0;
+	padding: 20px;
+}
+
+.content { text-align: left; }
+
+.scrollable {
+	border: 1px solid #AAA;
+	height: 200px;
+	margin: 16px auto;
+	font-size: 1.1rem;
+	overflow: auto;
+	width: 800px;
+}
+
+#nowrap { white-space: nowrap; }
+
+.resizable { resize: both; }
+#ver-resize { resize: vertical; }
+
+.resizable .scrollbarjs-ver-wrapper { margin-bottom: 16px; }
+.resizable .scrollbarjs-hor-wrapper { margin-right:  16px; }

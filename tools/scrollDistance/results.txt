@@ -1,0 +1,101 @@
+Win7: FF47, Chrome51, IE11
+
+FF:
+WHEEL_U/D: 90% (max 114px (KEY_U/D * 2))
+
+K_U/D: 57px
+K_L/R: 32px
+
+BTN_U/D: 57px
+BTN_L/R: 32px
+
+TRACK_U/D: 90% until H=380px, increasing from that point on
+TRACK_L/R: 90% until W=100px, increasing from that point on
+           ~99% at W=1280px
+
+
+
+Chrome:
+WHEEL_U/D: 100px
+
+KEY_U/D: 40px
+KEY_L/R: 40px
+
+BTN_U/D: 40px
+BTN_L/R: 40px
+
+TRACK_U/D: 100%+ to ~88% (the smaller, the bigger the %), averaging at ~90%
+TRACK_L/R: roughly 88%-92% (the smaller, the bigger the %)
+
+
+
+IE:
+WHEEL_U/D: 15%
+
+KEY_U/D: 1/8
+KEY_L/R: 1/8
+
+BTN_U/D: 1/8
+BTN_L/R: 1/8
+
+TRACK_U/D: 7/8
+TRACK_L/R: 100% - 12px
+
+
+
+------------------------------------------
+
+Mint17(Qiana): FF46, Chromium50, Opera? (14 I think)
+
+FF:
+WHEEL_U/D: KEY_U/D (57)
+
+K_U/D: 57
+K_L/R: 32
+
+// default theme
+BTN_U/D: Default theme has no buttons :D
+BTN_L/R: -
+
+// theme1
+BTN_U/D:
+BTN_L/R:
+
+// theme2
+BTN_U/D:
+BTN_L/R:
+
+// theme3
+BTN_U/D:
+BTN_L/R:
+
+TRACK_U/D: instantly centers at cursor
+TRACK_L/R: instantly centers at cursor
+
+
+
+Chromium:
+WHEEL_U/D: 53
+
+K_U/D: 40
+K_L/R: 40
+
+BTN_U/D: 40
+BTN_L/R: 40
+
+TRACK_U/D: 753
+TRACK_L/R: 1680
+
+
+
+Opera:
+WHEEL_U/D: 53
+
+K_U/D: 40
+K_L/R: 40
+
+BTN_U/D: 40
+BTN_L/R: 40
+
+TRACK_U/D: 753
+TRACK_L/R: 1680

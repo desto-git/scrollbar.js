@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>scrollbar.js</title>
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="../src/scrollbar-basic.css">
+</head>
+
+<body class="sbjs">
+
+<h1>scrollbar.js</h1>
+	<!-- https://www.flickr.com/photos/mathiasappel/25193861686 -->
+	<div id="image" class="scrollable resizable sbjs">
+		<img src="panda_1024.jpg" width=1024 height=678 alt="Red Panda by Mathias Appel"></img>
+	</div>
+
+	<div id="nowrap" class="content scrollable resizable sbjs"></div>
+
+	<div id="regular" class="content scrollable"></div>
+
+	<div id="ver" class="content scrollable sbjs"></div>
+	<div id="ver-resize" class="content scrollable sbjs resizable"></div>
+
+	<!--<textarea class="scrollable content"></textarea>-->
+	
+	<script src="script.js"></script>
+	<script src="../src/scrollbar.js"></script>
+	<script>
+		
+	</script>
+	<script>
+		//scrollbarjs( document.body );
+		scrollbarjs.init();
+		var $elems = document.getElementsByClassName('sbjs');
+		for( var i = 0; i < $elems.length; ++i ){
+			scrollbarjs.add( $elems[i] );
+		}
+	</script>
+</body>
+</html>

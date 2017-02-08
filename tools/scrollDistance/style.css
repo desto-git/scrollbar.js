@@ -1,0 +1,24 @@
+body {
+	margin: 0;
+	height: 1000vh;
+	width: 1000vw;
+}
+
+div {
+	background: #EEE;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	color: #888;
+	
+	font: 1rem sans-serif;
+	
+	margin: 4px;
+	padding: 8px;
+	
+	position: fixed;
+}
+
+#doc-top { top:    0; left:  0 }
+#doc-bot { bottom: 0; right: 0 }
+#hor { bottom: 0; left:  0 }
+#ver { top:    0; right: 0 }
