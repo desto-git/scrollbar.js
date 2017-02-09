@@ -1,0 +1,9 @@
+1.1.0
+-----
+- Consistent line end character across all files (LF)
+- add class "scrollbarjs-button-inactive" to buttons when the viewport can't scroll further in that direction
+- fixed horizontal thumb being offset by 1px to the top in Chrome in scrollbarjs-basic.css
+
+1.0.0
+-----
+- Initial release

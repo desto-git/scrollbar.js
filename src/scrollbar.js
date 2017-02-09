@@ -1,4 +1,4 @@
-// scrollbar.js v1.0.0 | (c) desto | MIT | https://github.com/desto-git/scrollbar.js
+// scrollbar.js v1.1.0 | (c) desto | MIT | https://github.com/desto-git/scrollbar.js
 
 'use strict';
 
@@ -272,6 +272,20 @@ function scrollViewport( $viewport, x, y, jump, repeat ){
 	}
 }
 
+// while it's not necessary to check if a class exists before adding or removing it (since a class will only be added once anyway)
+// it seems to have a performance boost (at least in firefox with dev tools open)
+// apparently it re-adds a class if it's there instead of doing nothing, which doesn't seem to be so smart
+function addClass( $elem, className ){
+	if( !$elem.classList.contains( className ) ){
+		$elem.classList.add( className );
+	}
+}
+function remClass( $elem, className ){
+	if( $elem.classList.contains( className ) ){
+		$elem.classList.remove( className );
+	}
+}
+
 
 
 // contains all the containers to watch over so we don't have to read the entire DOM every time update is called just to find our elements
@@ -435,8 +449,25 @@ function updateScrollbars( $elem, $viewport ){
 	else if( thumbHeight === 1 && thumbWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_HOR  );
 	else if( thumbHeight !== 1 && thumbWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_BOTH );
 	
+	// apply extra classes to indicate if a button will do something
+	var $buttonUp    = $elem.children[1].children[0];
+	var $buttonDown  = $elem.children[1].children[2];
+	var $buttonLeft  = $elem.children[2].children[0];
+	var $buttonRight = $elem.children[2].children[2];
+	
+	if( $viewport.scrollTop  === 0 ) addClass( $buttonUp,   PREFIX + '-button-inactive' );
+	else                             remClass( $buttonUp,   PREFIX + '-button-inactive' );
+	if( $viewport.scrollLeft === 0 ) addClass( $buttonLeft, PREFIX + '-button-inactive' );
+	else                             remClass( $buttonLeft, PREFIX + '-button-inactive' );
+	
+	if( ( $viewport.scrollTop  + $viewport.clientHeight ) === $viewport.scrollHeight ) addClass( $buttonDown,  PREFIX + '-button-inactive' );
+	else                                                                               remClass( $buttonDown,  PREFIX + '-button-inactive' );
+	if( ( $viewport.scrollLeft + $viewport.clientWidth  ) === $viewport.scrollWidth  ) addClass( $buttonRight, PREFIX + '-button-inactive' );
+	else                                                                               remClass( $buttonRight, PREFIX + '-button-inactive' );
 	
 	
+	
+	// calculate thumb size
 	var $trackVer  = $elem.children[1].children[1];
 	var $trackUp   = $trackVer.children[0];
 	var $thumbVer  = $trackVer.children[1];
@@ -449,8 +480,6 @@ function updateScrollbars( $elem, $viewport ){
 	
 	var trackHeight = $trackVer.clientHeight;
 	var trackWidth  = $trackHor.clientWidth;
-	
-	
 	
 	// height/width of track-up/track-left
 	var trackUpHeight  = Math.floor( trackHeight * ( $viewport.scrollTop  / $viewport.scrollHeight ) );

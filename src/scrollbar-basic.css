@@ -17,9 +17,7 @@
 .scrollbarjs-track-hor > div { 
 	display: inline-block; /* so they won't push each other to new lines */
 	height: 100%; /* so we can see them */
-	
-	position: relative; /* display: inline-block; for some reason lowers it by 1 pixel */
-	bottom: 1px;
+	float: left; /* display: inline-block; for some reason makes firefox move it down 1px; letting it float fixes it */
 }
 
 
@@ -100,4 +98,5 @@
 .scrollbarjs-thumb  { background: #BBB; }
 .scrollbarjs-button { background: #999; }
 .scrollbarjs-corner { background: #777; }
+.scrollbarjs-button-inactive { background: #CCC; }
 .scrollbarjs-resizable > .scrollbarjs-corner { background: #000; }
