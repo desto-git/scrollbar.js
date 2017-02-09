@@ -1,7 +1,7 @@
 What is this?
 -------------
 A script which produces stylable scrollbars. It also allows styling of the resize handle.
-[Check out the demo page](https://desto.hercules.uberspace.de/scrollbar.js/demo/)
+[Check out the demo page](https://desto-git.github.io/scrollbar.js/demo/)
 
 
 
