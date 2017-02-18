@@ -1,3 +1,10 @@
+1.2.0
+-----
+- using scrollbarjs.add() before scrollbarjs.init() has been called doesn't do anything
+- add class "scrollbarjs-active" to the element while a thumb is being dragged
+- scrollbarjs.init() can only be called once
+- fixed click repeat (holding mouse button) now working
+
 1.1.0
 -----
 - Consistent line end character across all files (LF)

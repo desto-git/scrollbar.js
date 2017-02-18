@@ -1,4 +1,4 @@
-// scrollbar.js v1.1.0 | (c) desto | MIT | https://github.com/desto-git/scrollbar.js
+// scrollbar.js v1.2.0 | MIT | https://github.com/desto-git/scrollbar.js
 
 'use strict';
 
@@ -37,7 +37,10 @@ var TRACK_DISTANCE  = 0.9; // somewhere on the track
 var DELAY  = 200; // delay to wait in milliseconds before repeating the action
 var REPEAT = 50; // repeat every x milliseconds
 
+var INIT = false;
 function init( data ){
+	if( INIT ) return; // don't initiate more than once
+	
 	if( data !== undefined ){
 		if( data.prefix ) PREFIX = data.prefix;
 		if( data.buttonDistance ) BUTTON_DISTANCE = data.buttonDistance;
@@ -80,7 +83,8 @@ function init( data ){
 			'resize: none!important;' +
 		'}';
 	document.head.appendChild( $style );
-		
+	
+	INIT = true;
 }
 
 // end of settings
@@ -124,6 +128,10 @@ function reset(){
 	clearTimeout(  TID );
 	DRAG_MODE = undefined;
 	document.body.classList.remove( PREFIX + '-drag' );
+	if( $DRAG_TARGET !== undefined ){
+		$DRAG_TARGET.parentElement.classList.remove( PREFIX + '-active' );
+		$DRAG_TARGET = undefined;
+	}
 }
 document.body.addEventListener( 'mouseup', reset );
 document.body.addEventListener( 'mouseenter', function( e ){
@@ -209,6 +217,7 @@ var DRAG_HOR = 1;
 function clickThumb( event, $viewport, direction ){
 	if( event.button !== 0 ) return;
 	document.body.classList.add( PREFIX + '-drag' );
+	$viewport.parentElement.classList.add( PREFIX + '-active' );
 	
 	DRAG_MODE = DRAG_MODE_SCROLL;
 	DRAG_AXIS = direction;
@@ -267,7 +276,7 @@ function scrollViewport( $viewport, x, y, jump, repeat ){
 		TID = setTimeout( function(){
 			IID = setInterval( function(){
 				scrollViewport( $viewport, x, y, jump, true );
-			}, INTERVAL );
+			}, REPEAT );
 		}, DELAY - REPEAT );
 	}
 }
@@ -292,6 +301,8 @@ function remClass( $elem, className ){
 var $ELEMS = [];
 
 function add( $elem ){
+	if( !INIT ) return; // do nothing if scrollbarjs hasn't been initialized yet; that is to prevent weird behavior caused by missing CSS rules
+	
 	var $viewport;
 	
 	if( $elem.tagName === 'BODY' ){
