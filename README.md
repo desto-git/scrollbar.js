@@ -46,15 +46,10 @@ Limitations
 
 Installation
 ------------
-Just include the script and css and add elements via `scrollbarjs.add( element )`.
+Just include the script and add elements via `scrollbarjs.add( element )`.
 ```
-<!-- head -->
-<link rel="stylesheet" href="scrollbar.css">
-
-<!-- body -->
-... bla bla content content...
-
-<script src="scrollbar.js"></script>
+<!-- at the end of body -->
+<script src="scrollbar.min.js"></script>
 <script>
 	scrollbarjs.init();
 	var $elems = document.getElementsByClassName('fancy');
@@ -62,9 +57,10 @@ Just include the script and css and add elements via `scrollbarjs.add( element )
 		scrollbarjs.add( $elems[i] );
 	}
 </script>
+</body>
 ```
 
-You might also want to link scrollbar-basic.css when starting out. This file contains some basic styling.
+You might also want to link `scrollbar-basic.css` (it's in the `src` folder) when starting out. This file contains some basic styling.
 ```
 <link rel="stylesheet" href="scrollbar-basic.css">
 ```
