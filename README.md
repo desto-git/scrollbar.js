@@ -36,11 +36,11 @@ I only want to style scrollbars, so...
 
 Limitations
 -----------
-- Since there is no way to figure out the distance the native scrollbar would scroll on click, the distance has to be guessed
+- Since there is no way to figure out the distance the native scrollbar would scroll on click, the distance has to be guessed (see `tools/scrollDistance/`)
 - The content of the target element will be placed inside another div. That's to retain native scrolling behavior with the mouse and keyboard. If you dynamically add content to it, check if the class `scrollbarjs` is present to add it to its first child instead.
 - Doesn't work with textareas (yet?)
 - Doesn't work with direction:rtl (yet?)
-- Scrollbars overlay part of the content. I can't seem to find a proper way to add reliable `padding-right` to the viewport for that, so better stick to semi-transparent scrollbars (for now?)
+- `padding-right` doesn't properly work on containers that overflow horizontally. That's not a problem with this script though. This behavior already exists in natively overlflowing containers.
 
 
 
