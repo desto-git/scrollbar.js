@@ -46,7 +46,7 @@ Limitations
 
 Installation
 ------------
-Just include the script and add elements via `scrollbarjs.add( element )`.
+Just include the script, call `scrollbarjs.init()` and add elements via `scrollbarjs.add( element )`.
 
 ```html
 <!-- at the end of body -->
@@ -77,8 +77,15 @@ You can change some default values by passing an object to `scrollbarjs.init()`.
 - `delay: (number) [=200]` the time in milliseconds to wait until the mousedown event repeats
 - `repeat: (number) [=50]` the time in milliseconds to wait between repeats
 
+`scrollbarjs.init()` returns an object containing some information that you might want to make use of:
+- `nativeHeight: (number)` height of the native scrollbar
+- `nativeWidth: (number)` width of the native scrollbar
+- `nativeDisplaces: (boolean)` does the native scrollbar displace the content? (usually desktop browsers do, mobile ones don't)
+- `supportsWebkitStyling (boolean)` are `::-webkit-scrollbar` pseudo classes supported? (see the [WebKit Blog](https://webkit.org/blog/363/styling-scrollbars/))
+- `supportsMsHiding (boolean)` is `-ms-overflow-style` supported?
+
 ```javascript
-scrollbarjs.init({
+var scrollbarProperties = scrollbarjs.init({
 	prefix: 'sb',
 	buttonDistance: 0.25
 });

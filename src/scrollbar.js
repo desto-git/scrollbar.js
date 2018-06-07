@@ -1,4 +1,4 @@
-// scrollbar.js v1.2.0 | MIT | https://github.com/desto-git/scrollbar.js
+// scrollbar.js v1.3.0 | MIT | https://github.com/desto-git/scrollbar.js
 var scrollbarjs = (function(){ 'use strict';
 
 /*
@@ -47,15 +47,19 @@ function getPrefixed( /* ... */ ){
 
 
 var INIT = false;
-function init( data ){
-	if( INIT ) return; // don't initiate more than once
+var INIT_DATA = {};
+function init( config ){
+	if( INIT ){
+		console.warn('scrollbarjs cannot be initiated more than once');
+		return INIT_DATA;
+	}
 
-	if( data !== undefined ){
-		if( data.prefix         ) cfg.prefix         = data.prefix;
-		if( data.buttonDistance ) cfg.buttonDistance = data.buttonDistance;
-		if( data.trackDistance  ) cfg.trackDistance  = data.trackDistance;
-		if( data.delay          ) cfg.delay          = data.delay;
-		if( data.repeat         ) cfg.repeat         = data.repeat;
+	if( config !== undefined ){
+		if( config.prefix         ) cfg.prefix         = config.prefix;
+		if( config.buttonDistance ) cfg.buttonDistance = config.buttonDistance;
+		if( config.trackDistance  ) cfg.trackDistance  = config.trackDistance;
+		if( config.delay          ) cfg.delay          = config.delay;
+		if( config.repeat         ) cfg.repeat         = config.repeat;
 	}
 
 	// inject required CSS into the page
@@ -92,6 +96,15 @@ function init( data ){
 	document.head.appendChild( $style );
 
 	INIT = true;
+	INIT_DATA = {
+		nativeHeight          : NATIVE_HEIGHT,
+		nativeWidth           : NATIVE_WIDTH,
+		nativeDisplaces       : ( NATIVE_HEIGHT > 0 || NATIVE_WIDTH > 0 ),
+		supportsWebkitStyling : SUPPORTS_WEBKIT_STYLING,
+		supportsMsHiding      : SUPPORTS_MS_HIDING,
+	};
+
+	return INIT_DATA;
 }
 
 
@@ -103,20 +116,51 @@ function init( data ){
 var NATIVE_WIDTH  = 0;
 var NATIVE_HEIGHT = 0;
 
-// scoping to pretent it didn't happen
-(function(){
-	var $scrollbar_wh = document.createElement('div');
-	$scrollbar_wh.style.width = '100%'; // it needs to be bigger than the scrollbar, because we won't get a negative value in case it's not
-	$scrollbar_wh.style.height = '100%';
-	$scrollbar_wh.style.overflow = 'scroll'; // show scrollbars
-	$scrollbar_wh.style.position = 'absolute'; // don't break the flow of the document in the process
-	$scrollbar_wh.style.top = '-100%'; // hide
-	document.body.appendChild( $scrollbar_wh );
+// additionally, we check for some ways to hide the scrollbar natively (without killing scrolling like overflow:hidden does)
+// in these cases, putting a wrapper around to hide the scrollbars would not be required
+var SUPPORTS_WEBKIT_STYLING = false; // do ::-webkit-scrollbar pseudo classes work? note that these don't seem to work on the body in mobile view
+var SUPPORTS_MS_HIDING = false; // does -ms-overflow-style work?
 
-	NATIVE_WIDTH  = $scrollbar_wh.offsetWidth  - $scrollbar_wh.clientWidth;
-	NATIVE_HEIGHT = $scrollbar_wh.offsetHeight - $scrollbar_wh.clientHeight;
+(function(){ // scoping to pretent it didn't happen
 
-	$scrollbar_wh.parentElement.removeChild( $scrollbar_wh );
+	// add styles required for this to work
+	var $style = document.createElement('style');
+	document.head.appendChild($style);
+	$style.innerHTML = '#scrollbarjs-sb-size{' +
+		'width:100%;'        + // it needs to be bigger than the scrollbar
+		'height:100%;'       +
+		'overflow:scroll;'   + // show scrollbars
+		'position:absolute;' + // don't break the flow of the document in the process
+		'top:100%;'          + // hide
+	'}';
+
+	// get dimensions of native scrollbars
+	var $size = document.createElement('div');
+	$size.id = 'scrollbarjs-sb-size';
+	document.body.appendChild( $size );
+
+	NATIVE_WIDTH  = $size.offsetWidth  - $size.clientWidth;
+	NATIVE_HEIGHT = $size.offsetHeight - $size.clientHeight;
+
+	// check if native tricks are available to hide scrollbars
+	$style.innerHTML +=
+		'#scrollbarjs-sb-size::-webkit-scrollbar{display:none}' + // webkit
+		'#scrollbarjs-sb-size{-ms-overflow-style:none}'; // ie and edge
+
+	try{
+		if( getComputedStyle( $size, '::-webkit-scrollbar' )['display'] === 'none' ){
+			SUPPORTS_WEBKIT_STYLING = true;
+		}
+	}catch(e){
+		// Firefox throws when checking an unknown pseudo element (NS_ERROR_NOT_AVAILABLE)
+	}
+
+	if( getComputedStyle( $size )['-ms-overflow-style'] === 'none' ){
+		SUPPORTS_MS_HIDING = true;
+	}
+
+	$style.parentElement.removeChild( $style );
+	$size .parentElement.removeChild( $size  );
 }());
 
 var TID; // contains the timeout id so we can stop it
