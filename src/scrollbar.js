@@ -62,7 +62,7 @@ function init( data ){
 	var $style = document.createElement('style');
 	$style.innerHTML =
 		'body.' + cfg.prefix + '{' +
-			'height:100vh;' +
+			'height:100vh;' + // min-height would gradually grow, max-height wouldn't show a scrollbar
 		'}' +
 
 		'.' + getPrefixed('drag') + '{' + // don't trigger selection when dragging the thumbs - https://stackoverflow.com/a/4407335

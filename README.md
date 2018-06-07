@@ -53,7 +53,7 @@ Just include the script and add elements via `scrollbarjs.add( element )`.
 <script src="scrollbar.min.js"></script>
 <script>
 	scrollbarjs.init();
-	var $elems = document.getElementsByClassName('fancy');
+	var $elems = document.getElementsByClassName('custom-scrollbar');
 	for( var i = 0; i < $elems.length; ++i ){
 		scrollbarjs.add( $elems[i] );
 	}
@@ -67,12 +67,12 @@ You might also want to link `scrollbar-basic.css` (it's in the `src` folder) whe
 <link rel="stylesheet" href="scrollbar-basic.css">
 ```
 
-You can change some default values by passing an object to scrollbarjs.init().
+You can change some default values by passing an object to `scrollbarjs.init()`.
 - `prefix: (string) [="scrollbarjs"]` the prefix to use for generated classes (don't forget to change the .css accordingly)
 - `buttonDistance: (number) [=60]` the distance to scroll when clicking on a scrollbar button.
 	If this is an integer, it will scroll by that many pixels.
 	If this is a floating point number, it will be used as a multiplicator (e.g. 0.90 scrolls by 90%). If you want to scroll by 100%, you have to specifiy something really close to it, like 0.9999. That's because JS can't actually differentiate between ints and floats.
-- `trackDistance: (number) [=0.9]` the distance to scroll when clicking on the scrollbar itself (the part between button and thumb).
+- `trackDistance: (number) [=0.9]` the distance to scroll when clicking on the track (the part between button and thumb).
 	Values act the same as above.
 - `delay: (number) [=200]` the time in milliseconds to wait until the mousedown event repeats
 - `repeat: (number) [=50]` the time in milliseconds to wait between repeats
@@ -89,7 +89,7 @@ scrollbarjs.init({
 Note!
 -----
 - If you have padding on a target element, apply it to `target > .scrollbarjs-viewport` instead.
-- For the body element, the body's height will be set to 100vh, so the scrolling div inside has something to scroll.
+- On the body element, the body's height will be set to 100vh. Otherwise, it would gradually grow when it's smaller, or it won't scroll if it is bigger.
 
 
 How does it work?
@@ -108,7 +108,7 @@ What have I tried?
 ------------------
 Just putting `overflow:hidden;`:
 - Native scroll behavior is lost
-- It's still possible to scroll via JavaScript, but that's might feel off depending on the default browser scrolling
+- It's still possible to scroll via JavaScript, but that might feel off depending on the default browser scrolling
 
 Put scrollbar on top of the native one:
 - Maybe I want a narrow scrollbar? The native one won't be fully covered then
@@ -120,7 +120,7 @@ Place absolutely positioned div above the target area:
 - Also having to deal with passing events to the actual element was too fiddly
 
 Put the content into a nested div:
-- This is the one I settled with, as it can feel the most natural, at the expense of more work to integrate it into ones website
+- This is the one I settled with, as it feels the most natural, at the expense of more work to integrate it into ones website
 - Messes with the content, so if content is dynamically added, extra care must be taken
 - Eventually conflicts with existing CSS rules
 
