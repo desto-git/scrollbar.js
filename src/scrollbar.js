@@ -61,33 +61,33 @@ function init( data ){
 	// inject required CSS into the page
 	var $style = document.createElement('style');
 	$style.innerHTML =
-		'body.' + cfg.prefix + ' {' +
-			'height: 100vh;' +
+		'body.' + cfg.prefix + '{' +
+			'height:100vh;' +
 		'}' +
 
-		'.' + getPrefixed('drag') + ' {' + // don't trigger selection when dragging the thumbs - http://stackoverflow.com/a/4407335
-			'-webkit-touch-callout: none;' +
-			'-webkit-user-select: none;' +
-			'-khtml-user-select: none;' +
-			'-moz-user-select: none;' +
-			'-ms-user-select: none;' +
-			'user-select: none;' +
+		'.' + getPrefixed('drag') + '{' + // don't trigger selection when dragging the thumbs - http://stackoverflow.com/a/4407335
+			'-webkit-touch-callout:none;' +
+			  '-webkit-user-select:none;' +
+			   '-khtml-user-select:none;' +
+			     '-moz-user-select:none;' +
+			      '-ms-user-select:none;' +
+			          'user-select:none;' +
 		'}' +
 
-		'.' + cfg.prefix + ' {' +
-			'overflow: hidden;' +
-			'position: relative;' +
+		'.' + cfg.prefix + '{' +
+			'overflow:hidden;' +
+			'position:relative;' +
 		'}' +
 
-		'.' + getPrefixed('viewport') + ' {' +
-			'overflow: scroll;' +
-			'margin-right: '  + -NATIVE_WIDTH  + 'px;' +
-			'margin-bottom: ' + -NATIVE_HEIGHT + 'px;' +
+		'.' + getPrefixed('viewport') + '{' +
+			'overflow:scroll;' +
+			'margin-right:'  + -NATIVE_WIDTH  + 'px;' +
+			'margin-bottom:' + -NATIVE_HEIGHT + 'px;' +
 		'}' +
 
 
-		'.' + getPrefixed('resizable') + ' {' + // resizing is done in js
-			'resize: none!important;' +
+		'.' + getPrefixed('resizable') + '{' + // resizing is done in js
+			'resize:none!important;' +
 		'}';
 	document.head.appendChild( $style );
 
