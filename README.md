@@ -47,7 +47,8 @@ Limitations
 Installation
 ------------
 Just include the script and add elements via `scrollbarjs.add( element )`.
-```
+
+```html
 <!-- at the end of body -->
 <script src="scrollbar.min.js"></script>
 <script>
@@ -61,7 +62,8 @@ Just include the script and add elements via `scrollbarjs.add( element )`.
 ```
 
 You might also want to link `scrollbar-basic.css` (it's in the `src` folder) when starting out. This file contains some basic styling.
-```
+
+```html
 <link rel="stylesheet" href="scrollbar-basic.css">
 ```
 
@@ -74,7 +76,8 @@ You can change some default values by passing an object to scrollbarjs.init().
 	Values act the same as above.
 - `delay: (number) [=200]` the time in milliseconds to wait until the mousedown event repeats
 - `repeat: (number) [=50]` the time in milliseconds to wait between repeats
-```
+
+```javascript
 scrollbarjs.init({
 	prefix: 'sb',
 	buttonDistance: 0.25
