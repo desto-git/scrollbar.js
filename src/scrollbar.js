@@ -32,6 +32,20 @@ var cfg = {
 	repeat: 50, // repeat every x milliseconds
 };
 
+
+
+// getPrefixed( 'viewport', 'fit-parent' ) => "cfg.prefix-viewport cfg.prefix-fit-parent"
+function getPrefixed( /* ... */ ){
+	var className = '';
+
+	for( var i = 0; i < arguments.length; ++i )
+		className += ' ' + cfg.prefix + '-' + arguments[i];
+
+	return className.trim(); // remove leading whitespace
+}
+
+
+
 var INIT = false;
 function init( data ){
 	if( INIT ) return; // don't initiate more than once
@@ -51,7 +65,7 @@ function init( data ){
 			'height: 100vh;' +
 		'}' +
 
-		'.' + cfg.prefix + '-drag {' + // don't trigger selection when dragging the thumbs - http://stackoverflow.com/a/4407335
+		'.' + getPrefixed('drag') + ' {' + // don't trigger selection when dragging the thumbs - http://stackoverflow.com/a/4407335
 			'-webkit-touch-callout: none;' +
 			'-webkit-user-select: none;' +
 			'-khtml-user-select: none;' +
@@ -65,22 +79,20 @@ function init( data ){
 			'position: relative;' +
 		'}' +
 
-		'.' + cfg.prefix + '-viewport {' +
+		'.' + getPrefixed('viewport') + ' {' +
 			'overflow: scroll;' +
 			'margin-right: '  + -NATIVE_WIDTH  + 'px;' +
 			'margin-bottom: ' + -NATIVE_HEIGHT + 'px;' +
 		'}' +
 
 
-		'.' + cfg.prefix + '-resizable {' + // resizing is done in js
+		'.' + getPrefixed('resizable') + ' {' + // resizing is done in js
 			'resize: none!important;' +
 		'}';
 	document.head.appendChild( $style );
 
 	INIT = true;
 }
-
-// end of settings
 
 
 
@@ -120,9 +132,9 @@ function reset(){
 	clearInterval( IID );
 	clearTimeout(  TID );
 	DRAG_MODE = undefined;
-	document.body.classList.remove( cfg.prefix + '-drag' );
+	document.body.classList.remove( getPrefixed('drag') );
 	if( $DRAG_TARGET !== undefined ){
-		$DRAG_TARGET.parentElement.classList.remove( cfg.prefix + '-active' );
+		$DRAG_TARGET.parentElement.classList.remove( getPrefixed('active') );
 		$DRAG_TARGET = undefined;
 	}
 }
@@ -181,12 +193,12 @@ var BUTTON_DOWN  = 2;
 var BUTTON_LEFT  = 3;
 function clickButton( event, $viewport, direction ){
 	if( event.button !== 0 ) return; // only work on left click
-	//document.body.classList.add( cfg.prefix + '-drag' ); // disable selection of text
+
 	switch( direction ){
-		case BUTTON_UP:    scrollViewport( $viewport, 0, -cfg.buttonDistance ); break;
-		case BUTTON_RIGHT: scrollViewport( $viewport, cfg.buttonDistance, 0  ); break;
-		case BUTTON_DOWN:  scrollViewport( $viewport, 0, cfg.buttonDistance  ); break;
-		case BUTTON_LEFT:  scrollViewport( $viewport, -cfg.buttonDistance, 0 ); break;
+		case BUTTON_UP:    scrollViewport( $viewport, 0, -cfg.buttonDistance    ); break;
+		case BUTTON_RIGHT: scrollViewport( $viewport,     cfg.buttonDistance, 0 ); break;
+		case BUTTON_DOWN:  scrollViewport( $viewport, 0,  cfg.buttonDistance    ); break;
+		case BUTTON_LEFT:  scrollViewport( $viewport,    -cfg.buttonDistance, 0 ); break;
 	}
 }
 
@@ -196,7 +208,7 @@ var TRACK_DOWN  = 2;
 var TRACK_LEFT  = 3;
 function clickTrack( event, $viewport, direction ){
 	if( event.button !== 0 ) return;
-	//document.body.classList.add( cfg.prefix + '-drag' );
+
 	switch( direction ){
 		case TRACK_UP:    scrollViewport( $viewport, 0, -cfg.trackDistance ); break;
 		case TRACK_RIGHT: scrollViewport( $viewport, cfg.trackDistance, 0  ); break;
@@ -209,8 +221,8 @@ var DRAG_VER = 0;
 var DRAG_HOR = 1;
 function clickThumb( event, $viewport, direction ){
 	if( event.button !== 0 ) return;
-	document.body.classList.add( cfg.prefix + '-drag' );
-	$viewport.parentElement.classList.add( cfg.prefix + '-active' );
+	document.body.classList.add( getPrefixed('drag') );
+	$viewport.parentElement.classList.add( getPrefixed('active') );
 
 	DRAG_MODE = DRAG_MODE_SCROLL;
 	DRAG_AXIS = direction;
@@ -228,7 +240,7 @@ function clickThumb( event, $viewport, direction ){
 var DRAG_BOTH = 2;
 function clickResize( event, $elem, direction ){
 	if( event.button !== 0 ) return;
-	document.body.classList.add( cfg.prefix + '-drag' );
+	document.body.classList.add( getPrefixed('drag') );
 
 	DRAG_MODE = DRAG_MODE_RESIZE;
 	DRAG_AXIS = direction;
@@ -236,10 +248,10 @@ function clickResize( event, $elem, direction ){
 }
 
 // helper functions
-var CLASS_SCROLL_NONE = cfg.prefix + '-scroll-none';
-var CLASS_SCROLL_VER  = cfg.prefix + '-scroll-ver';
-var CLASS_SCROLL_HOR  = cfg.prefix + '-scroll-hor';
-var CLASS_SCROLL_BOTH = cfg.prefix + '-scroll-both';
+var CLASS_SCROLL_NONE = getPrefixed('scroll-none');
+var CLASS_SCROLL_VER  = getPrefixed('scroll-ver' );
+var CLASS_SCROLL_HOR  = getPrefixed('scroll-hor' );
+var CLASS_SCROLL_BOTH = getPrefixed('scroll-both');
 function switchScrollClass( $elem, className ){
 	if( $elem.classList.contains( className ) )
 		return;
@@ -311,7 +323,7 @@ function add( $elem ){
 
 	$elem.classList.add( cfg.prefix );
 
-	$viewport.className = cfg.prefix + '-viewport';
+	$viewport.className = getPrefixed('viewport');
 	$viewport.dataset.scrollbarjs = ' '; // a space so I don't have to do additional checks in the update function
 	$viewport.innerHTML = $elem.innerHTML;
 
@@ -321,25 +333,25 @@ function add( $elem ){
 	// create scrollbars; naming similar to https://webkit.org/blog/363/styling-scrollbars/
 	// vertical
 	var $ver = document.createElement('aside');
-	$ver.className = cfg.prefix + '-scrollbar ' + cfg.prefix + '-ver';
+	$ver.className = getPrefixed('scrollbar', 'ver');
 
 	var $up = document.createElement('div');
-	$up.className = cfg.prefix + '-button ' + cfg.prefix + '-up';
+	$up.className = getPrefixed('button', 'up');
 	$up.addEventListener( 'mousedown', function( e ){ clickButton( e, $viewport, BUTTON_UP ) } );
 
 	var $trackVer = document.createElement('div');
-	$trackVer.className = cfg.prefix + '-track ' + cfg.prefix + '-track-ver';
+	$trackVer.className = getPrefixed('track', 'track-ver');
 
 	var $trackUp = document.createElement('div');
-	$trackUp.className = cfg.prefix + '-track-piece ' + cfg.prefix + '-track-up'
+	$trackUp.className = getPrefixed('track-piece', 'track-up');
 	$trackUp.addEventListener( 'mousedown', function( e ){ clickTrack( e, $viewport, TRACK_UP ) } );
 
 	var $thumbVer = document.createElement('div');
-	$thumbVer.className = cfg.prefix + '-thumb ' + cfg.prefix + '-thumb-ver';
+	$thumbVer.className = getPrefixed('thumb', 'thumb-ver');
 	$thumbVer.addEventListener( 'mousedown', function( e ){ clickThumb( e, $viewport, DRAG_VER ) } );
 
 	var $trackDown = document.createElement('div');
-	$trackDown.className = cfg.prefix + '-track-piece ' + cfg.prefix + '-track-down'
+	$trackDown.className = getPrefixed('track-piece', 'track-down');
 	$trackDown.addEventListener( 'mousedown', function( e ){ clickTrack( e, $viewport, TRACK_DOWN ) } );
 
 	$trackVer.appendChild( $trackUp   );
@@ -347,7 +359,7 @@ function add( $elem ){
 	$trackVer.appendChild( $trackDown );
 
 	var $down = document.createElement('div');
-	$down.className = cfg.prefix + '-button ' + cfg.prefix + '-down';
+	$down.className = getPrefixed('button', 'down');
 	$down.addEventListener( 'mousedown', function( e ){ clickButton( e, $viewport, BUTTON_DOWN ) } );
 
 	$ver.appendChild( $up       );
@@ -356,25 +368,25 @@ function add( $elem ){
 
 	// horizontal
 	var $hor = document.createElement('aside');
-	$hor.className = cfg.prefix + '-scrollbar ' + cfg.prefix + '-hor';
+	$hor.className = getPrefixed('scrollbar', 'hor');
 
 	var $left = document.createElement('div');
-	$left.className = cfg.prefix + '-button ' + cfg.prefix + '-left';
+	$left.className = getPrefixed('button', 'left');
 	$left.addEventListener( 'mousedown', function( e ){ clickButton( e, $viewport, BUTTON_LEFT ) } );
 
 	var $trackHor = document.createElement('div');
-	$trackHor.className = cfg.prefix + '-track ' + cfg.prefix + '-track-hor';
+	$trackHor.className = getPrefixed('track', 'track-hor');
 
 	var $trackLeft = document.createElement('div');
-	$trackLeft.className = cfg.prefix + '-track-piece ' + cfg.prefix + '-track-left'
+	$trackLeft.className = getPrefixed('track-piece', 'track-left');
 	$trackLeft.addEventListener( 'mousedown', function( e ){ clickTrack( e, $viewport, TRACK_LEFT ) } );
 
 	var $thumbHor = document.createElement('div');
-	$thumbHor.className = cfg.prefix + '-thumb ' + cfg.prefix + '-thumb-hor';
+	$thumbHor.className = getPrefixed('thumb', 'thumb-hor');
 	$thumbHor.addEventListener( 'mousedown', function( e ){ clickThumb( e, $viewport, DRAG_HOR ) } );
 
 	var $trackRight = document.createElement('div');
-	$trackRight.className = cfg.prefix + '-track-piece ' + cfg.prefix + '-track-right'
+	$trackRight.className = getPrefixed('track-piece', 'track-right');
 	$trackRight.addEventListener( 'mousedown', function( e ){ clickTrack( e, $viewport, TRACK_RIGHT ) } );
 
 	$trackHor.appendChild( $trackLeft  );
@@ -382,7 +394,7 @@ function add( $elem ){
 	$trackHor.appendChild( $trackRight );
 
 	var $right = document.createElement('div');
-	$right.className = cfg.prefix + '-button ' + cfg.prefix + '-right';
+	$right.className = getPrefixed('button', 'right');
 	$right.addEventListener( 'mousedown', function( e ){ clickButton( e, $viewport, BUTTON_RIGHT ) } );
 
 	$hor.appendChild( $left     );
@@ -394,11 +406,11 @@ function add( $elem ){
 
 	// corner
 	var $corner = document.createElement('aside');
-	$corner.className = cfg.prefix + '-corner';
+	$corner.className = getPrefixed('corner');
 
 	var resize = getComputedStyle( $elem )['resize'];
 	if( resize === 'both' || resize === 'horizontal' || resize === 'vertical' ){
-		$elem.classList.add( cfg.prefix + '-resizable' );
+		$elem.classList.add( getPrefixed('resizable') );
 
 		var direction;
 		var directionClass;
@@ -408,7 +420,7 @@ function add( $elem ){
 			case 'both':       direction = DRAG_BOTH; directionClass = 'both'; break;
 		}
 
-		$corner.classList.add( cfg.prefix + '-resize-' + directionClass );
+		$corner.classList.add( getPrefixed('resize-' + directionClass) );
 		$corner.addEventListener( 'mousedown', function( e ){ clickResize( e, $elem, direction ) } );
 	}
 
@@ -459,15 +471,15 @@ function updateScrollbars( $elem, $viewport ){
 	var $buttonLeft  = $elem.children[2].children[0];
 	var $buttonRight = $elem.children[2].children[2];
 
-	if( $viewport.scrollTop  === 0 ) addClass( $buttonUp,   cfg.prefix + '-button-inactive' );
-	else                             remClass( $buttonUp,   cfg.prefix + '-button-inactive' );
-	if( $viewport.scrollLeft === 0 ) addClass( $buttonLeft, cfg.prefix + '-button-inactive' );
-	else                             remClass( $buttonLeft, cfg.prefix + '-button-inactive' );
+	if( $viewport.scrollTop  === 0 ) addClass( $buttonUp,   getPrefixed('button-inactive') );
+	else                             remClass( $buttonUp,   getPrefixed('button-inactive') );
+	if( $viewport.scrollLeft === 0 ) addClass( $buttonLeft, getPrefixed('button-inactive') );
+	else                             remClass( $buttonLeft, getPrefixed('button-inactive') );
 
-	if( ( $viewport.scrollTop  + $viewport.clientHeight ) === $viewport.scrollHeight ) addClass( $buttonDown,  cfg.prefix + '-button-inactive' );
-	else                                                                               remClass( $buttonDown,  cfg.prefix + '-button-inactive' );
-	if( ( $viewport.scrollLeft + $viewport.clientWidth  ) === $viewport.scrollWidth  ) addClass( $buttonRight, cfg.prefix + '-button-inactive' );
-	else                                                                               remClass( $buttonRight, cfg.prefix + '-button-inactive' );
+	if( ( $viewport.scrollTop  + $viewport.clientHeight ) === $viewport.scrollHeight ) addClass( $buttonDown,  getPrefixed('button-inactive') );
+	else                                                                               remClass( $buttonDown,  getPrefixed('button-inactive') );
+	if( ( $viewport.scrollLeft + $viewport.clientWidth  ) === $viewport.scrollWidth  ) addClass( $buttonRight, getPrefixed('button-inactive') );
+	else                                                                               remClass( $buttonRight, getPrefixed('button-inactive') );
 
 
 
