@@ -65,7 +65,7 @@ function init( data ){
 			'height:100vh;' +
 		'}' +
 
-		'.' + getPrefixed('drag') + '{' + // don't trigger selection when dragging the thumbs - http://stackoverflow.com/a/4407335
+		'.' + getPrefixed('drag') + '{' + // don't trigger selection when dragging the thumbs - https://stackoverflow.com/a/4407335
 			'-webkit-touch-callout:none;' +
 			  '-webkit-user-select:none;' +
 			   '-khtml-user-select:none;' +
@@ -161,8 +161,9 @@ document.body.addEventListener( 'mousemove', function( e ){
 
 	} else if( DRAG_MODE === DRAG_MODE_RESIZE ){
 		// inconsistent behavior between browsers when resizing centered content
-		// chrome's way makes more sense (resize by twice the amount to keep following the cursor properly)
+		// chrome's way makes more sense (resize by twice the amount when centered so it keeps following the cursor properly)
 		// but firefox' is easier to implement, as I don't need to check for all the ways the content could be centered (margin: 0 auto, flexbox, text-align,..?)
+		// and IE11 doesn't understand resize in the first place, so only benefits there!
 		var x = ( e.clientX - LAST_X );
 		var y = ( e.clientY - LAST_Y );
 
@@ -460,7 +461,7 @@ function updateScrollbars( $elem, $viewport ){
 	var thumbWidth  = $viewport.clientWidth  / $viewport.scrollWidth;
 
 	// which scrollbars are active
-	if(      thumbHeight === 1 && thumbWidth === 1 ) switchScrollClass( $elem, CLASS_SCROLL_NONE );
+	     if( thumbHeight === 1 && thumbWidth === 1 ) switchScrollClass( $elem, CLASS_SCROLL_NONE );
 	else if( thumbHeight !== 1 && thumbWidth === 1 ) switchScrollClass( $elem, CLASS_SCROLL_VER  );
 	else if( thumbHeight === 1 && thumbWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_HOR  );
 	else if( thumbHeight !== 1 && thumbWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_BOTH );
@@ -480,8 +481,6 @@ function updateScrollbars( $elem, $viewport ){
 	else                                                                               remClass( $buttonDown,  getPrefixed('button-inactive') );
 	if( ( $viewport.scrollLeft + $viewport.clientWidth  ) === $viewport.scrollWidth  ) addClass( $buttonRight, getPrefixed('button-inactive') );
 	else                                                                               remClass( $buttonRight, getPrefixed('button-inactive') );
-
-
 
 	// calculate thumb size
 	var $trackVer  = $elem.children[1].children[1];
@@ -520,7 +519,6 @@ function update( $elem ){
 	var $viewport = $elem.children[0];
 
 	var viewport  = $elem.clientHeight     + ',' + $elem.clientWidth     + '-' +
-	                //$viewport.offsetHeight + ',' + $viewport.offsetWidth + '-' +
 	                $viewport.scrollHeight + ',' + $viewport.scrollWidth;
 	var scrollbar = $viewport.scrollTop    + ',' + $viewport.scrollLeft;
 
