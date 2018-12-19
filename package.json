@@ -1,0 +1,30 @@
+{
+	"name": "scrollbar-js",
+	"version": "1.3.1",
+	"description": "A script which produces stylable scrollbars. It also allows styling of the resize handle.",
+	"main": "scrollbar.min.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/desto-git/scrollbar.js.git"
+	},
+	"keywords": [
+		"scrollbar",
+		"scrollbars",
+		"vanilla-javascript",
+		"vanilla-js",
+		"no-dependencies",
+		"native-scroll",
+		"resize",
+		"resizer",
+		"css"
+	],
+	"author": "desto (https://github.com/desto-git)",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/desto-git/scrollbar.js/issues"
+	},
+	"homepage": "https://github.com/desto-git/scrollbar.js"
+}
