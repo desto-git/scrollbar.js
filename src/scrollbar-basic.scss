@@ -1,102 +1,106 @@
-/* visibility */
-.scrollbarjs-ver,
-.scrollbarjs-hor,
-.scrollbarjs-corner {
+$prefix: scrollbarjs;
+
+
+
+// visibility
+.#{$prefix}-ver,
+.#{$prefix}-hor,
+.#{$prefix}-corner {
 	display: none;
 }
 
-.scrollbarjs-scroll-ver  > .scrollbarjs-ver,
-.scrollbarjs-scroll-hor  > .scrollbarjs-hor,
-.scrollbarjs-scroll-both > .scrollbarjs-ver,
-.scrollbarjs-scroll-both > .scrollbarjs-hor,
-.scrollbarjs-scroll-both > .scrollbarjs-corner,
-.scrollbarjs-resizable   > .scrollbarjs-corner {
+.#{$prefix}-scroll-ver  > .#{$prefix}-ver,
+.#{$prefix}-scroll-hor  > .#{$prefix}-hor,
+.#{$prefix}-scroll-both > .#{$prefix}-ver,
+.#{$prefix}-scroll-both > .#{$prefix}-hor,
+.#{$prefix}-scroll-both > .#{$prefix}-corner,
+.#{$prefix}-resizable   > .#{$prefix}-corner {
 	display: block;
 }
 
-.scrollbarjs-track-hor > div { 
-	display: inline-block; /* so they won't push each other to new lines */
-	height: 100%; /* so we can see them */
-	float: left; /* display: inline-block; for some reason makes firefox move it down 1px; letting it float fixes it */
+.#{$prefix}-track-hor > div {
+	height: 100%; // so we can see them
+	float: left; // so they won't push each other to new lines
+	// display: inline-block; for some reason makes firefox move it down 1px; letting it float fixes it
 }
 
 
 
-/* rough positioning */
-.scrollbarjs-scrollbar,
-.scrollbarjs-track,
-.scrollbarjs-button,
-.scrollbarjs-corner {
+// rough positioning
+.#{$prefix}-scrollbar,
+.#{$prefix}-track,
+.#{$prefix}-button,
+.#{$prefix}-corner {
 	position: absolute;
 }
 
-/* height: 100%; width: 100% for absolutely positioned elements
-	 width/height:100% isn't as reliable since they need a parent with these explicitly set to work */
-.scrollbarjs-track {
+// height: 100%; width: 100% for absolutely positioned elements
+// width/height:100% isn't as reliable since they need a parent with these explicitly set to work
+.#{$prefix}-track {
 	top: 0; right: 0; bottom: 0; left: 0;
 }
 
-.scrollbarjs-up     { top:    0; right: 0 }
-.scrollbarjs-down   { bottom: 0; right: 0 }
-.scrollbarjs-left   { bottom: 0; left:  0 }
-.scrollbarjs-right  { bottom: 0; right: 0 }
-.scrollbarjs-corner { bottom: 0; right: 0 }
+.#{$prefix}-up     { top:    0; right: 0 }
+.#{$prefix}-down   { bottom: 0; right: 0 }
+.#{$prefix}-left   { bottom: 0; left:  0 }
+.#{$prefix}-right  { bottom: 0; right: 0 }
+.#{$prefix}-corner { bottom: 0; right: 0 }
 
 
 
-/* dimensions */
+// dimensions
 
-/* let scrollbars take up space, useful for opaque ones, however note that this doesn't seem work if the content can't wrap to a new line */
+// let scrollbars take up space, useful for opaque ones, however note that this doesn't seem work if the content can't wrap to a new line
 /*
-.scrollbarjs-viewport {
+.#{$prefix}-viewport {
 	padding-right: 20px;
 }
 */
 
-/* this is a reliable way to add padding-bottom to the viewport */
+// this is a reliable way to add padding-bottom to the viewport
 /*
-.scrollbarjs-viewport::after {
+.#{$prefix}-viewport::after {
 	content: ''; display: block;
 	height: 16px;
 }
 */
 
-.scrollbarjs-ver {
+.#{$prefix}-ver {
 	top: 0; right: 0; bottom: 0;
 	width: 16px;
 }
-.scrollbarjs-hor {
+.#{$prefix}-hor {
 	right: 0; bottom: 0; left: 0;
 	height: 16px;
 }
-.scrollbarjs-button, .scrollbarjs-corner {
+.#{$prefix}-button, .#{$prefix}-corner {
 	height: 16px;
 	width: 16px;
 }
 
-.scrollbarjs-scroll-both > .scrollbarjs-ver,
-.scrollbarjs-resizable   > .scrollbarjs-ver {
+.#{$prefix}-scroll-both > .#{$prefix}-ver,
+.#{$prefix}-resizable   > .#{$prefix}-ver {
 	margin-bottom: 16px;
 }
-.scrollbarjs-scroll-both > .scrollbarjs-hor,
-.scrollbarjs-resizable   > .scrollbarjs-hor {
+.#{$prefix}-scroll-both > .#{$prefix}-hor,
+.#{$prefix}-resizable   > .#{$prefix}-hor {
 	margin-right: 16px;
 }
 
-.scrollbarjs-track-ver { margin: 16px 0; }
-.scrollbarjs-track-hor { margin: 0 16px; }
+.#{$prefix}-track-ver { margin: 16px 0; }
+.#{$prefix}-track-hor { margin: 0 16px; }
 
 
 
-/* color */
-.scrollbarjs-scrollbar,
-.scrollbarjs-corner {
+// color
+.#{$prefix}-scrollbar,
+.#{$prefix}-corner {
 	opacity: .8;
 }
 
-.scrollbarjs-track  { background: #DDD; }
-.scrollbarjs-thumb  { background: #BBB; }
-.scrollbarjs-button { background: #999; }
-.scrollbarjs-corner { background: #777; }
-.scrollbarjs-button-inactive { background: #CCC; }
-.scrollbarjs-resizable > .scrollbarjs-corner { background: #000; }
+.#{$prefix}-track  { background: #DDD; }
+.#{$prefix}-thumb  { background: #BBB; }
+.#{$prefix}-button { background: #999; }
+.#{$prefix}-corner { background: #777; }
+.#{$prefix}-button-inactive { background: #CCC; }
+.#{$prefix}-resizable > .#{$prefix}-corner { background: #000; }

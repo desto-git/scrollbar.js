@@ -14,8 +14,6 @@ var scrollbarjs = (function(){ 'use strict';
 	probably more
 
 	a more attractive demo site which also explains things in its scrollable boxes
-
-	css as .sass/.scss because variables are neat
 */
 
 var cfg = {
