@@ -1,0 +1,135 @@
+.scrollbarjs-ver,
+.scrollbarjs-hor,
+.scrollbarjs-corner {
+  display: none;
+}
+
+.scrollbarjs-scroll-ver > .scrollbarjs-ver,
+.scrollbarjs-scroll-hor > .scrollbarjs-hor,
+.scrollbarjs-scroll-both > .scrollbarjs-ver,
+.scrollbarjs-scroll-both > .scrollbarjs-hor,
+.scrollbarjs-scroll-both > .scrollbarjs-corner,
+.scrollbarjs-resizable > .scrollbarjs-corner {
+  display: block;
+}
+
+.scrollbarjs-track-hor > div {
+  height: 100%;
+  float: left;
+}
+
+.scrollbarjs-scrollbar,
+.scrollbarjs-track,
+.scrollbarjs-button,
+.scrollbarjs-corner {
+  position: absolute;
+}
+
+.scrollbarjs-track {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.scrollbarjs-up {
+  top: 0;
+  right: 0;
+}
+
+.scrollbarjs-down {
+  bottom: 0;
+  right: 0;
+}
+
+.scrollbarjs-left {
+  bottom: 0;
+  left: 0;
+}
+
+.scrollbarjs-right {
+  bottom: 0;
+  right: 0;
+}
+
+.scrollbarjs-corner {
+  bottom: 0;
+  right: 0;
+}
+
+/*
+.scrollbarjs-viewport {
+	padding-right: 20px;
+}
+*/
+/*
+.scrollbarjs-viewport::after {
+	content: ''; display: block;
+	height: 16px;
+}
+*/
+.scrollbarjs-ver {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+}
+
+.scrollbarjs-hor {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 16px;
+}
+
+.scrollbarjs-button, .scrollbarjs-corner {
+  height: 16px;
+  width: 16px;
+}
+
+.scrollbarjs-scroll-both > .scrollbarjs-ver,
+.scrollbarjs-resizable > .scrollbarjs-ver {
+  margin-bottom: 16px;
+}
+
+.scrollbarjs-scroll-both > .scrollbarjs-hor,
+.scrollbarjs-resizable > .scrollbarjs-hor {
+  margin-right: 16px;
+}
+
+.scrollbarjs-track-ver {
+  margin: 16px 0;
+}
+
+.scrollbarjs-track-hor {
+  margin: 0 16px;
+}
+
+.scrollbarjs-scrollbar,
+.scrollbarjs-corner {
+  opacity: 0.8;
+}
+
+.scrollbarjs-track {
+  background: #DDD;
+}
+
+.scrollbarjs-thumb {
+  background: #BBB;
+}
+
+.scrollbarjs-button {
+  background: #999;
+}
+
+.scrollbarjs-corner {
+  background: #777;
+}
+
+.scrollbarjs-button-inactive {
+  background: #CCC;
+}
+
+.scrollbarjs-resizable > .scrollbarjs-corner {
+  background: #000;
+}
