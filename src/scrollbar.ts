@@ -18,7 +18,7 @@ interface IScrollbarProperties {
 	supportsMsHiding      : boolean;
 }
 
-var scrollbarjs = (function(){
+const scrollbarjs = (function(){
 
 /*
 	TODO:
@@ -36,70 +36,61 @@ var scrollbarjs = (function(){
 */
 
 // don't forget to change your css accordingly
-var configPrefix = 'scrollbarjs';
+let configPrefix = 'scrollbarjs';
 
 // distance to scroll when clicking
-var configButtonDistance: TDistance = 60; // on a button
-var configTrackDistance: TDistance = 0.9; // somewhere on the track
+let configButtonDistance: TDistance = 60; // on a button
+let configTrackDistance: TDistance = 0.9; // somewhere on the track
 
-var configDelay = 200; // wait x milliseconds before repeating the action
-var configRepeat = 50; // repeat every x milliseconds
+let configDelay = 200; // wait x milliseconds before repeating the action
+let configRepeat = 50; // repeat every x milliseconds
 
 
 
 // put some global things into local scope, so uglify can better compress the source
-var doc = document;
-var $head = doc.head as HTMLHeadElement;
-var $body = doc.body;
-var createElement = doc.createElement.bind( doc );
+const doc = document;
+const $head = doc.head as HTMLHeadElement;
+const $body = doc.body;
+const createElement = doc.createElement.bind( doc );
 
-function appendChild( $parent: HTMLElement, $child: HTMLElement ){
+const appendChild = ( $parent: HTMLElement, $child: HTMLElement ) => {
 	$parent.appendChild( $child );
 }
 
-function addEventListener<K extends keyof HTMLElementEventMap>(
+const addEventListener = <K extends keyof HTMLElementEventMap>(
 	$target: HTMLElement,
 	event: K,
 	callback: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any
-){
+) => {
 	$target.addEventListener( event, callback );
 }
 
-function addClass( $elem: Element, className: string ){ $elem.classList.add   ( className ); }
-function remClass( $elem: Element, className: string ){ $elem.classList.remove( className ); }
+const addClass = ( $elem: Element, className: string ) => { $elem.classList.add   ( className ); }
+const remClass = ( $elem: Element, className: string ) => { $elem.classList.remove( className ); }
 
 
 
 // getPrefixed( 'viewport', 'fit-parent' ) => "configPrefix-viewport configPrefix-fit-parent"
-function getPrefixed( ...args: string[] ){
-	var className = '';
-
-	for( var i = 0; i < args.length; ++i )
-		className += ' ' + configPrefix + '-' + arguments[i];
-
-	return className.trim(); // remove leading whitespace
+const getPrefixed = ( ...args: string[] ) => {
+	return args.map( arg => configPrefix + '-' + arg ).join(' ');
 }
 
 
 
-var INIT = false;
-var INIT_DATA: IScrollbarProperties;
-function init( config: IConfig ){
-	if( INIT ){
-		console.warn('scrollbarjs cannot be initiated more than once');
-		return INIT_DATA;
-	}
+let wasInitialized = false;
+const init = ( config?: IConfig ): IScrollbarProperties => {
+	if( wasInitialized ) throw new Error('scrollbarjs cannot be initialized more than once');
 
 	if( config !== undefined ){
-		if( config.prefix         ) configPrefix          = config.prefix;
+		if( config.prefix         ) configPrefix         = config.prefix;
 		if( config.buttonDistance ) configButtonDistance = config.buttonDistance;
 		if( config.trackDistance  ) configTrackDistance  = config.trackDistance;
-		if( config.delay          ) configDelay           = config.delay;
-		if( config.repeat         ) configRepeat          = config.repeat;
+		if( config.delay          ) configDelay          = config.delay;
+		if( config.repeat         ) configRepeat         = config.repeat;
 	}
 
 	// inject required CSS into the page
-	var $style = createElement('style');
+	const $style = createElement('style');
 	$style.innerHTML =
 		'body.' + configPrefix + '{' +
 			'height:100vh;' + // min-height would gradually grow, max-height wouldn't show a scrollbar
@@ -121,8 +112,8 @@ function init( config: IConfig ){
 
 		'.' + getPrefixed('viewport') + '{' +
 			'overflow:scroll;' +
-			'margin-right:'  + -NATIVE_WIDTH  + 'px;' +
-			'margin-bottom:' + -NATIVE_HEIGHT + 'px;' +
+			'margin-right:'  + -nativeWidth  + 'px;' +
+			'margin-bottom:' + -nativeHeight + 'px;' +
 		'}' +
 
 		'.' + getPrefixed('resizable') + '{' + // resizing is done in js
@@ -130,16 +121,15 @@ function init( config: IConfig ){
 		'}';
 	appendChild( $head, $style );
 
-	INIT = true;
-	INIT_DATA = {
-		nativeHeight          : NATIVE_HEIGHT,
-		nativeWidth           : NATIVE_WIDTH,
-		nativeDisplaces       : ( NATIVE_HEIGHT > 0 || NATIVE_WIDTH > 0 ),
-		supportsWebkitStyling : SUPPORTS_WEBKIT_STYLING,
-		supportsMsHiding      : SUPPORTS_MS_HIDING,
-	};
+	wasInitialized = true;
 
-	return INIT_DATA;
+	return {
+		nativeHeight          : nativeHeight,
+		nativeWidth           : nativeWidth,
+		nativeDisplaces       : ( nativeHeight > 0 || nativeWidth > 0 ),
+		supportsWebkitStyling : supportsWebkitStyling,
+		supportsMsHiding      : supportsMsHiding,
+	};
 }
 
 
@@ -148,18 +138,18 @@ function init( config: IConfig ){
 
 // to get the native width and height of a scrollbar, we create an element with overflow:scroll
 // it will be removed right afterwards when we have the details we want
-var NATIVE_WIDTH  = 0;
-var NATIVE_HEIGHT = 0;
+let nativeWidth  = 0;
+let nativeHeight = 0;
 
 // additionally, we check for some ways to hide the scrollbar natively (without killing scrolling like overflow:hidden does)
 // in these cases, putting a wrapper around to hide the scrollbars would not be required
-var SUPPORTS_WEBKIT_STYLING = false; // do ::-webkit-scrollbar pseudo classes work? note that these don't seem to work on the body in mobile view
-var SUPPORTS_MS_HIDING = false; // does -ms-overflow-style work?
+let supportsWebkitStyling = false; // do ::-webkit-scrollbar pseudo classes work? note that these don't seem to work on the body in mobile view
+let supportsMsHiding = false; // does -ms-overflow-style work?
 
 (function(){ // scoping to pretent it didn't happen
 
 	// add styles required for this to work
-	var $style = createElement('style');
+	const $style = createElement('style');
 	appendChild( $head, $style );
 	$style.innerHTML = '#scrollbarjs-sb-size{' +
 		'width:100%;'        + // it needs to be bigger than the scrollbar
@@ -170,12 +160,12 @@ var SUPPORTS_MS_HIDING = false; // does -ms-overflow-style work?
 	'}';
 
 	// get dimensions of native scrollbars
-	var $size = createElement('div');
+	const $size = createElement('div');
 	$size.id = 'scrollbarjs-sb-size';
 	appendChild( $body, $size );
 
-	NATIVE_WIDTH  = $size.offsetWidth  - $size.clientWidth;
-	NATIVE_HEIGHT = $size.offsetHeight - $size.clientHeight;
+	nativeWidth  = $size.offsetWidth  - $size.clientWidth;
+	nativeHeight = $size.offsetHeight - $size.clientHeight;
 
 	// check if native tricks are available to hide scrollbars
 	$style.innerHTML +=
@@ -184,98 +174,99 @@ var SUPPORTS_MS_HIDING = false; // does -ms-overflow-style work?
 
 	try{
 		if( getComputedStyle( $size, '::-webkit-scrollbar' ).display === 'none' ){
-			SUPPORTS_WEBKIT_STYLING = true;
+			supportsWebkitStyling = true;
 		}
 	}catch(e){
 		// Firefox throws when checking an unknown pseudo element (NS_ERROR_NOT_AVAILABLE)
 	}
 
 	if( getComputedStyle( $size ).msOverflowStyle === 'none' ){
-		SUPPORTS_MS_HIDING = true;
+		supportsMsHiding = true;
 	}
 
 	$style.parentElement.removeChild( $style );
 	$size .parentElement.removeChild( $size  );
 }());
 
-var DRAG_MODE_NONE   = 0;
-var DRAG_MODE_SCROLL = 1;
-var DRAG_MODE_RESIZE = 2;
-var DRAG_MODE = DRAG_MODE_NONE;
+const DRAG_MODE_NONE   = 0;
+const DRAG_MODE_SCROLL = 1;
+const DRAG_MODE_RESIZE = 2;
+let dragMode = DRAG_MODE_NONE;
 
-var DRAG_AXIS_NONE = 0;
-var DRAG_AXIS_VER  = 1;
-var DRAG_AXIS_HOR  = 2;
-var DRAG_AXIS_BOTH = 3;
-var DRAG_AXIS = DRAG_AXIS_NONE;
+const DRAG_AXIS_NONE = 0;
+const DRAG_AXIS_VER  = 1;
+const DRAG_AXIS_HOR  = 2;
+const DRAG_AXIS_BOTH = 3;
+let dragAxis = DRAG_AXIS_NONE;
 
-var $DRAG_TARGET: HTMLElement | null; // the content being scrolled
+let $dragTarget: HTMLElement | null; // the content being scrolled
 
-function reset(){
+const reset = () => {
 	clearInterval( IID );
 	clearTimeout(  TID );
-	DRAG_MODE = DRAG_MODE_NONE;
+	dragMode = DRAG_MODE_NONE;
 	remClass( $body, getPrefixed('drag') );
-	if( $DRAG_TARGET ){
-		remClass( $DRAG_TARGET.parentElement, getPrefixed('active') );
-		$DRAG_TARGET = null;
+	if( $dragTarget ){
+		remClass( $dragTarget.parentElement, getPrefixed('active') );
+		$dragTarget = null;
 	}
 }
 addEventListener( $body, 'mouseup', reset );
-addEventListener( $body, 'mouseenter', function( e ){
+addEventListener( $body, 'mouseenter', e => {
 	// leaving browser window and going back in, check if left mouse button is "still" pressed
 	if( ( e.buttons & 1 ) !== 1 ) reset();
 } );
 
-var LAST_X = 0, LAST_Y = 0; // last x y offset
-var DRAG_DISTANCE = 0; // distance to scroll in pixels for each pixel the thumb has been moved
-var VIEWPORT_SCROLLPOS = 0; // the current x or y position as a double instead of an int, used to circumvent unprecise dragging
-addEventListener( $body, 'mousemove', function( e ){
-	if( DRAG_MODE === DRAG_MODE_SCROLL ){
+let lastX = 0;
+let lastY = 0; // last x y offset
+let dragDistance = 0; // distance to scroll in pixels for each pixel the thumb has been moved
+let viewportScrollPosition = 0; // the current x or y position as a double instead of an int, used to circumvent unprecise dragging
+addEventListener( $body, 'mousemove', e => {
+	if( dragMode === DRAG_MODE_SCROLL ){
 
-		if( DRAG_AXIS === DRAG_AXIS_VER ){
-			VIEWPORT_SCROLLPOS += DRAG_DISTANCE * ( e.clientY - LAST_Y );
-			scrollViewport( $DRAG_TARGET, undefined, Math.round( VIEWPORT_SCROLLPOS ), true );
+		if( dragAxis === DRAG_AXIS_VER ){
+			viewportScrollPosition += dragDistance * ( e.clientY - lastY );
+			scrollViewport( $dragTarget, undefined, Math.round( viewportScrollPosition ), true );
 
 		} else {
-			VIEWPORT_SCROLLPOS += DRAG_DISTANCE * ( e.clientX - LAST_X );
-			scrollViewport( $DRAG_TARGET, Math.round( VIEWPORT_SCROLLPOS ), undefined, true );
+			viewportScrollPosition += dragDistance * ( e.clientX - lastX );
+			scrollViewport( $dragTarget, Math.round( viewportScrollPosition ), undefined, true );
 		}
 
-	} else if( DRAG_MODE === DRAG_MODE_RESIZE ){
+	} else if( dragMode === DRAG_MODE_RESIZE ){
 		// inconsistent behavior between browsers when resizing centered content
 		// chrome's way makes more sense (resize by twice the amount when centered so it keeps following the cursor properly)
 		// but firefox' is easier to implement, as I don't need to check for all the ways the content could be centered (margin: 0 auto, flexbox, text-align,..?)
 		// and IE11 doesn't understand resize in the first place, so only benefits there!
-		var x = ( e.clientX - LAST_X );
-		var y = ( e.clientY - LAST_Y );
+		const x = ( e.clientX - lastX );
+		const y = ( e.clientY - lastY );
 
-		if( DRAG_AXIS !== DRAG_AXIS_HOR  ){ // VER or BOTH
-			var h = $DRAG_TARGET.clientHeight;
-			$DRAG_TARGET.style.height = h + y + 'px';
+		if( dragAxis !== DRAG_AXIS_HOR  ){ // VER or BOTH
+			const h = $dragTarget.clientHeight;
+			$dragTarget.style.height = h + y + 'px';
 			// verify if height is legit, e.g. in case max-height is set
-			$DRAG_TARGET.style.height = getComputedStyle( $DRAG_TARGET ).height;
+			$dragTarget.style.height = getComputedStyle( $dragTarget ).height;
 		}
 
-		if( DRAG_AXIS !== DRAG_AXIS_VER  ){ // HOR or BOTH
-			var w = $DRAG_TARGET.clientWidth;
-			$DRAG_TARGET.style.width = w + x + 'px';
-			$DRAG_TARGET.style.width = getComputedStyle( $DRAG_TARGET ).width;
+		if( dragAxis !== DRAG_AXIS_VER  ){ // HOR or BOTH
+			const w = $dragTarget.clientWidth;
+			$dragTarget.style.width = w + x + 'px';
+			$dragTarget.style.width = getComputedStyle( $dragTarget ).width;
 		}
 	}
 
-	LAST_X = e.clientX;
-	LAST_Y = e.clientY;
+	lastX = e.clientX;
+	lastY = e.clientY;
 } );
 
 
 
 // event listeners
-var BUTTON_UP    = 0;
-var BUTTON_RIGHT = 1;
-var BUTTON_DOWN  = 2;
-var BUTTON_LEFT  = 3;
-function clickButton( event: MouseEvent, $viewport: HTMLElement, direction: number ){
+const BUTTON_UP    = 0;
+const BUTTON_RIGHT = 1;
+const BUTTON_DOWN  = 2;
+const BUTTON_LEFT  = 3;
+const clickButton = ( event: MouseEvent, $viewport: HTMLElement, direction: number ) => {
 	if( event.button !== 0 ) return; // only work on left click
 
 	switch( direction ){
@@ -286,11 +277,11 @@ function clickButton( event: MouseEvent, $viewport: HTMLElement, direction: numb
 	}
 }
 
-var TRACK_UP    = 0;
-var TRACK_RIGHT = 1;
-var TRACK_DOWN  = 2;
-var TRACK_LEFT  = 3;
-function clickTrack( event: MouseEvent, $viewport: HTMLElement, direction: number ){
+const TRACK_UP    = 0;
+const TRACK_RIGHT = 1;
+const TRACK_DOWN  = 2;
+const TRACK_LEFT  = 3;
+const clickTrack = ( event: MouseEvent, $viewport: HTMLElement, direction: number ) => {
 	if( event.button !== 0 ) return;
 
 	switch( direction ){
@@ -301,43 +292,43 @@ function clickTrack( event: MouseEvent, $viewport: HTMLElement, direction: numbe
 	}
 }
 
-function clickThumb( event: MouseEvent, $viewport: HTMLElement, direction: number ){
+const clickThumb = ( event: MouseEvent, $viewport: HTMLElement, direction: number ) => {
 	if( event.button !== 0 ) return;
 
 	addClass( $body, getPrefixed('drag') );
 	addClass( $viewport.parentElement, getPrefixed('active') );
 
-	var $target = (event.target as HTMLElement).parentElement;
-	DRAG_MODE = DRAG_MODE_SCROLL;
-	DRAG_AXIS = direction;
-	$DRAG_TARGET = $viewport;
+	const $target = (event.target as HTMLElement).parentElement;
+	dragMode = DRAG_MODE_SCROLL;
+	dragAxis = direction;
+	$dragTarget = $viewport;
 
 	if( direction === DRAG_AXIS_VER ){
-		VIEWPORT_SCROLLPOS = $viewport.scrollTop;
-		DRAG_DISTANCE = $viewport.scrollHeight / $target.clientHeight;
+		viewportScrollPosition = $viewport.scrollTop;
+		dragDistance = $viewport.scrollHeight / $target.clientHeight;
 	} else {
-		VIEWPORT_SCROLLPOS = $viewport.scrollLeft;
-		DRAG_DISTANCE = $viewport.scrollWidth / $target.clientWidth;
+		viewportScrollPosition = $viewport.scrollLeft;
+		dragDistance = $viewport.scrollWidth / $target.clientWidth;
 	}
 }
 
-function clickResize( event: MouseEvent, $elem: HTMLElement, direction: number ){
+const clickResize = ( event: MouseEvent, $elem: HTMLElement, direction: number ) => {
 	if( event.button !== 0 ) return;
+
 	addClass( $body, getPrefixed('drag') );
 
-	DRAG_MODE = DRAG_MODE_RESIZE;
-	DRAG_AXIS = direction;
-	$DRAG_TARGET = $elem;
+	dragMode = DRAG_MODE_RESIZE;
+	dragAxis = direction;
+	$dragTarget = $elem;
 }
 
 // helper functions
-var CLASS_SCROLL_NONE = getPrefixed('scroll-none');
-var CLASS_SCROLL_VER  = getPrefixed('scroll-ver' );
-var CLASS_SCROLL_HOR  = getPrefixed('scroll-hor' );
-var CLASS_SCROLL_BOTH = getPrefixed('scroll-both');
-function switchScrollClass( $elem: HTMLElement, className: string ){
-	if( $elem.classList.contains( className ) )
-		return;
+const CLASS_SCROLL_NONE = getPrefixed('scroll-none');
+const CLASS_SCROLL_VER  = getPrefixed('scroll-ver' );
+const CLASS_SCROLL_HOR  = getPrefixed('scroll-hor' );
+const CLASS_SCROLL_BOTH = getPrefixed('scroll-both');
+const switchScrollClass = ( $elem: HTMLElement, className: string ) => {
+	if( $elem.classList.contains( className ) ) return;
 
 	remClass( $elem, CLASS_SCROLL_NONE );
 	remClass( $elem, CLASS_SCROLL_VER  );
@@ -346,9 +337,9 @@ function switchScrollClass( $elem: HTMLElement, className: string ){
 	addClass( $elem, className );
 }
 
-var TID: number; // contains the timeout id so we can stop it
-var IID: number; // interval id
-function scrollViewport( $viewport: HTMLElement, x?: number, y?: number, jump?: boolean, repeat?: boolean ){
+let TID: number; // contains the timeout id so we can stop it
+let IID: number; // interval id
+const scrollViewport = ( $viewport: HTMLElement, x?: number, y?: number, jump?: boolean, repeat?: boolean ) => {
 	if( jump ){
 		if( x !== undefined ) $viewport.scrollLeft = x;
 		if( y !== undefined ) $viewport.scrollTop  = y;
@@ -361,8 +352,8 @@ function scrollViewport( $viewport: HTMLElement, x?: number, y?: number, jump?: 
 	}
 
 	if( !repeat && !jump ){ // there's no need to repeat when jumping
-		TID = setTimeout( function(){
-			IID = setInterval( function(){
+		TID = setTimeout( () => {
+			IID = setInterval( () => {
 				scrollViewport( $viewport, x, y, jump, true );
 			}, configRepeat );
 		}, configDelay - configRepeat );
@@ -372,12 +363,11 @@ function scrollViewport( $viewport: HTMLElement, x?: number, y?: number, jump?: 
 
 
 // contains all the containers to watch over so we don't have to read the entire DOM every time update is called just to find our elements
-var $ELEMS: HTMLElement[] = [];
+const $ELEMS: HTMLElement[] = [];
+const add = ( $elem: HTMLElement ) => {
+	if( !wasInitialized ) return; // do nothing if scrollbarjs hasn't been initialized yet; that is to prevent weird behavior caused by missing CSS rules
 
-function add( $elem: HTMLElement ){
-	if( !INIT ) return; // do nothing if scrollbarjs hasn't been initialized yet; that is to prevent weird behavior caused by missing CSS rules
-
-	var $viewport: HTMLElement;
+	let $viewport: HTMLElement;
 
 	if( $elem.tagName === 'BODY' ){
 		$viewport = createElement('div');
@@ -401,70 +391,70 @@ function add( $elem: HTMLElement ){
 
 	// create scrollbars; naming similar to https://webkit.org/blog/363/styling-scrollbars/
 	// vertical
-	var $ver = createElement('aside');
+	const $ver = createElement('aside');
 	$ver.className = getPrefixed('scrollbar', 'ver');
 
-	var $up = createElement('div');
+	const $up = createElement('div');
 	$up.className = getPrefixed('button', 'up');
-	addEventListener( $up, 'mousedown', function( e ){ clickButton( e, $viewport, BUTTON_UP ) } );
+	addEventListener( $up, 'mousedown', e => clickButton( e, $viewport, BUTTON_UP ) );
 
-	var $trackVer = createElement('div');
+	const $trackVer = createElement('div');
 	$trackVer.className = getPrefixed('track', 'track-ver');
 
-	var $trackUp = createElement('div');
+	const $trackUp = createElement('div');
 	$trackUp.className = getPrefixed('track-piece', 'track-up');
-	addEventListener( $trackUp, 'mousedown', function( e ){ clickTrack( e, $viewport, TRACK_UP ) } );
+	addEventListener( $trackUp, 'mousedown', e => clickTrack( e, $viewport, TRACK_UP ) );
 
-	var $thumbVer = createElement('div');
+	const $thumbVer = createElement('div');
 	$thumbVer.className = getPrefixed('thumb', 'thumb-ver');
-	addEventListener( $thumbVer, 'mousedown', function( e ){ clickThumb( e, $viewport, DRAG_AXIS_VER ) } );
+	addEventListener( $thumbVer, 'mousedown', e => clickThumb( e, $viewport, DRAG_AXIS_VER ) );
 
-	var $trackDown = createElement('div');
+	const $trackDown = createElement('div');
 	$trackDown.className = getPrefixed('track-piece', 'track-down');
-	addEventListener( $trackDown, 'mousedown', function( e ){ clickTrack( e, $viewport, TRACK_DOWN ) } );
+	addEventListener( $trackDown, 'mousedown', e => clickTrack( e, $viewport, TRACK_DOWN ) );
 
 	appendChild( $trackVer, $trackUp   );
 	appendChild( $trackVer, $thumbVer  );
 	appendChild( $trackVer, $trackDown );
 
-	var $down = createElement('div');
+	const $down = createElement('div');
 	$down.className = getPrefixed('button', 'down');
-	addEventListener( $down, 'mousedown', function( e ){ clickButton( e, $viewport, BUTTON_DOWN ) } );
+	addEventListener( $down, 'mousedown', e => clickButton( e, $viewport, BUTTON_DOWN ) );
 
 	appendChild( $ver, $up       );
 	appendChild( $ver, $trackVer );
 	appendChild( $ver, $down     );
 
 	// horizontal
-	var $hor = createElement('aside');
+	const $hor = createElement('aside');
 	$hor.className = getPrefixed('scrollbar', 'hor');
 
-	var $left = createElement('div');
+	const $left = createElement('div');
 	$left.className = getPrefixed('button', 'left');
-	addEventListener( $left, 'mousedown', function( e ){ clickButton( e, $viewport, BUTTON_LEFT ) } );
+	addEventListener( $left, 'mousedown', e => clickButton( e, $viewport, BUTTON_LEFT ) );
 
-	var $trackHor = createElement('div');
+	const $trackHor = createElement('div');
 	$trackHor.className = getPrefixed('track', 'track-hor');
 
-	var $trackLeft = createElement('div');
+	const $trackLeft = createElement('div');
 	$trackLeft.className = getPrefixed('track-piece', 'track-left');
-	addEventListener( $trackLeft, 'mousedown', function( e ){ clickTrack( e, $viewport, TRACK_LEFT ) } );
+	addEventListener( $trackLeft, 'mousedown', e => clickTrack( e, $viewport, TRACK_LEFT ) );
 
-	var $thumbHor = createElement('div');
+	const $thumbHor = createElement('div');
 	$thumbHor.className = getPrefixed('thumb', 'thumb-hor');
-	addEventListener( $thumbHor, 'mousedown', function( e ){ clickThumb( e, $viewport, DRAG_AXIS_HOR ) } );
+	addEventListener( $thumbHor, 'mousedown', e => clickThumb( e, $viewport, DRAG_AXIS_HOR ) );
 
-	var $trackRight = createElement('div');
+	const $trackRight = createElement('div');
 	$trackRight.className = getPrefixed('track-piece', 'track-right');
-	addEventListener( $trackRight, 'mousedown', function( e ){ clickTrack( e, $viewport, TRACK_RIGHT ) } );
+	addEventListener( $trackRight, 'mousedown', e => clickTrack( e, $viewport, TRACK_RIGHT ) );
 
 	appendChild( $trackHor, $trackLeft  );
 	appendChild( $trackHor, $thumbHor   );
 	appendChild( $trackHor, $trackRight );
 
-	var $right = createElement('div');
+	const $right = createElement('div');
 	$right.className = getPrefixed('button', 'right');
-	addEventListener( $right, 'mousedown', function( e ){ clickButton( e, $viewport, BUTTON_RIGHT ) } );
+	addEventListener( $right, 'mousedown', e => clickButton( e, $viewport, BUTTON_RIGHT ) );
 
 	appendChild( $hor, $left     );
 	appendChild( $hor, $trackHor );
@@ -474,15 +464,15 @@ function add( $elem: HTMLElement ){
 	appendChild( $elem, $hor );
 
 	// corner
-	var $corner = createElement('aside');
+	const $corner = createElement('aside');
 	$corner.className = getPrefixed('corner');
 
-	var resize = getComputedStyle( $elem ).resize; // cannot be detected in Edge
+	const resize = getComputedStyle( $elem ).resize; // cannot be detected in Edge
 	if( resize === 'both' || resize === 'horizontal' || resize === 'vertical' ){
 		addClass( $elem, getPrefixed('resizable') );
 
-		var direction: number;
-		var directionClass;
+		let direction: number;
+		let directionClass;
 		switch( resize ){
 			case 'vertical':   direction = DRAG_AXIS_VER;  directionClass = 'ver';  break;
 			case 'horizontal': direction = DRAG_AXIS_HOR;  directionClass = 'hor';  break;
@@ -490,7 +480,7 @@ function add( $elem: HTMLElement ){
 		}
 
 		addClass( $corner, getPrefixed('resize-' + directionClass) );
-		addEventListener( $corner, 'mousedown', function( e ){ clickResize( e, $elem, direction ) } );
+		addEventListener( $corner, 'mousedown', e => clickResize( e, $elem, direction ) );
 	}
 
 	appendChild( $elem, $corner );
@@ -502,95 +492,96 @@ function add( $elem: HTMLElement ){
 
 
 
-function updateViewport( $elem: HTMLElement, $viewport: HTMLElement ){
+const updateViewport = ( $elem: HTMLElement, $viewport: HTMLElement ) => {
 	// height:100% doesn't work on elements whose parents don't have an explicit value set
 	// this is a hacky way to achieve this anyways
-	// Firefox won't remember the scroll position after a reload, but I think that's bearable ;)
+	// Firefox won't remember the scrollTop position after a reload, but I think that's bearable ;)
 	if( $elem.clientHeight < $viewport.scrollHeight ){ // check if the element can grow
 
 		var y = $viewport.scrollTop; // keep scrolling distance
 		$viewport.style.height = ''; // try to be as big as the content
 
 		if( $elem.clientHeight < $viewport.scrollHeight ) // if that doesn't work, shrink to fit
-			$viewport.style.height = $elem.clientHeight + NATIVE_HEIGHT + 1 + 'px'; // +1 so the element will expand once it can, trying this procedure again
+			$viewport.style.height = $elem.clientHeight + nativeHeight + 1 + 'px'; // +1 so the element will expand once it can, trying this procedure again
 		else // if it did work, remove that spare 1px line at the bottom; this will prevent flickering when resizing
-			$viewport.style.height = $elem.clientHeight + NATIVE_HEIGHT + 'px';
+			$viewport.style.height = $elem.clientHeight + nativeHeight + 'px';
 
 		$viewport.scrollTop = y;
 
 	} else { // match the element
-		$viewport.style.height = $elem.clientHeight + NATIVE_HEIGHT + 'px';
+		$viewport.style.height = $elem.clientHeight + nativeHeight + 'px';
 	}
 }
 
-function updateScrollbars( $elem: HTMLElement, $viewport: HTMLElement ){
+const CLASS_BUTTON_INACTIVE = getPrefixed('button-inactive');
+const updateScrollbars = ( $elem: HTMLElement, $viewport: HTMLElement ) => {
 	// in % from 0 to 1, how much of the viewport is visible
-	var thumbHeight = $viewport.clientHeight / $viewport.scrollHeight;
-	var thumbWidth  = $viewport.clientWidth  / $viewport.scrollWidth;
+	const visibleHeight = $viewport.clientHeight / $viewport.scrollHeight;
+	const visibleWidth  = $viewport.clientWidth  / $viewport.scrollWidth;
 
 	// which scrollbars are active
-	     if( thumbHeight === 1 && thumbWidth === 1 ) switchScrollClass( $elem, CLASS_SCROLL_NONE );
-	else if( thumbHeight !== 1 && thumbWidth === 1 ) switchScrollClass( $elem, CLASS_SCROLL_VER  );
-	else if( thumbHeight === 1 && thumbWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_HOR  );
-	else if( thumbHeight !== 1 && thumbWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_BOTH );
+	     if( visibleHeight === 1 && visibleWidth === 1 ) switchScrollClass( $elem, CLASS_SCROLL_NONE );
+	else if( visibleHeight !== 1 && visibleWidth === 1 ) switchScrollClass( $elem, CLASS_SCROLL_VER  );
+	else if( visibleHeight === 1 && visibleWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_HOR  );
+	else if( visibleHeight !== 1 && visibleWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_BOTH );
 
 	// apply extra classes to indicate if a button will do something
-	var $buttonUp    = $elem.children[1].children[0];
-	var $buttonDown  = $elem.children[1].children[2];
-	var $buttonLeft  = $elem.children[2].children[0];
-	var $buttonRight = $elem.children[2].children[2];
+	const $buttonUp    = $elem.children[1].children[0];
+	const $buttonDown  = $elem.children[1].children[2];
+	const $buttonLeft  = $elem.children[2].children[0];
+	const $buttonRight = $elem.children[2].children[2];
 
-	if( $viewport.scrollTop  === 0 ) addClass( $buttonUp,   getPrefixed('button-inactive') );
-	else                             remClass( $buttonUp,   getPrefixed('button-inactive') );
-	if( $viewport.scrollLeft === 0 ) addClass( $buttonLeft, getPrefixed('button-inactive') );
-	else                             remClass( $buttonLeft, getPrefixed('button-inactive') );
+	if( $viewport.scrollTop  === 0 ) addClass( $buttonUp,   CLASS_BUTTON_INACTIVE );
+	else                             remClass( $buttonUp,   CLASS_BUTTON_INACTIVE );
+	if( $viewport.scrollLeft === 0 ) addClass( $buttonLeft, CLASS_BUTTON_INACTIVE );
+	else                             remClass( $buttonLeft, CLASS_BUTTON_INACTIVE );
 
-	if( ( $viewport.scrollTop  + $viewport.clientHeight ) === $viewport.scrollHeight ) addClass( $buttonDown,  getPrefixed('button-inactive') );
-	else                                                                               remClass( $buttonDown,  getPrefixed('button-inactive') );
-	if( ( $viewport.scrollLeft + $viewport.clientWidth  ) === $viewport.scrollWidth  ) addClass( $buttonRight, getPrefixed('button-inactive') );
-	else                                                                               remClass( $buttonRight, getPrefixed('button-inactive') );
+	if( ( $viewport.scrollTop  + $viewport.clientHeight ) === $viewport.scrollHeight ) addClass( $buttonDown,  CLASS_BUTTON_INACTIVE );
+	else                                                                               remClass( $buttonDown,  CLASS_BUTTON_INACTIVE );
+	if( ( $viewport.scrollLeft + $viewport.clientWidth  ) === $viewport.scrollWidth  ) addClass( $buttonRight, CLASS_BUTTON_INACTIVE );
+	else                                                                               remClass( $buttonRight, CLASS_BUTTON_INACTIVE );
 
 	// calculate thumb size
-	var $trackVer  = $elem.children[1].children[1];
-	var $trackUp   = $trackVer.children[0] as HTMLElement;
-	var $thumbVer  = $trackVer.children[1] as HTMLElement;
-	var $trackDown = $trackVer.children[2] as HTMLElement;
+	const $trackVer  = $elem.children[1].children[1];
+	const $trackUp   = $trackVer.children[0] as HTMLElement;
+	const $thumbVer  = $trackVer.children[1] as HTMLElement;
+	const $trackDown = $trackVer.children[2] as HTMLElement;
 
-	var $trackHor   = $elem.children[2].children[1];
-	var $trackLeft  = $trackHor.children[0] as HTMLElement;
-	var $thumbHor   = $trackHor.children[1] as HTMLElement;
-	var $trackRight = $trackHor.children[2] as HTMLElement;
+	const $trackHor   = $elem.children[2].children[1];
+	const $trackLeft  = $trackHor.children[0] as HTMLElement;
+	const $thumbHor   = $trackHor.children[1] as HTMLElement;
+	const $trackRight = $trackHor.children[2] as HTMLElement;
 
-	var trackHeight = $trackVer.clientHeight;
-	var trackWidth  = $trackHor.clientWidth;
+	const trackHeight = $trackVer.clientHeight;
+	const trackWidth  = $trackHor.clientWidth;
 
 	// height/width of track-up/track-left
-	var trackUpHeight  = Math.floor( trackHeight * ( $viewport.scrollTop  / $viewport.scrollHeight ) );
-	var trackLeftWidth = Math.floor( trackWidth  * ( $viewport.scrollLeft / $viewport.scrollWidth  ) );
+	const trackUpHeight  = Math.floor( trackHeight * ( $viewport.scrollTop  / $viewport.scrollHeight ) );
+	const trackLeftWidth = Math.floor( trackWidth  * ( $viewport.scrollLeft / $viewport.scrollWidth  ) );
 	$trackUp.style.height  = trackUpHeight  + 'px';
 	$trackLeft.style.width = trackLeftWidth + 'px';
 
 	// height/width of the thumb
-	var thumbHeight = Math.ceil( trackHeight * thumbHeight );
-	var thumbWidth  = Math.ceil( trackWidth  * thumbWidth  );
+	const thumbHeight = Math.ceil( trackHeight * visibleHeight );
+	const thumbWidth  = Math.ceil( trackWidth  * visibleWidth  );
 	$thumbVer.style.height = thumbHeight + 'px';
 	$thumbHor.style.width  = thumbWidth  + 'px';
 
 	// height/width of track-down/track-right
-	var trackDownHeight = trackHeight - trackUpHeight  - thumbHeight;
-	var trackRightWidth = trackWidth  - trackLeftWidth - thumbWidth;
+	const trackDownHeight = trackHeight - trackUpHeight  - thumbHeight;
+	const trackRightWidth = trackWidth  - trackLeftWidth - thumbWidth;
 	$trackDown.style.height = trackDownHeight + 'px';
 	$trackRight.style.width = trackRightWidth + 'px';
 }
 
-function update( $elem: HTMLElement ){
-	var $viewport = $elem.children[0] as HTMLElement;
+const update = ( $elem: HTMLElement ) => {
+	const $viewport = $elem.children[0] as HTMLElement;
 
-	var viewport  = $elem.clientHeight     + ',' + $elem.clientWidth     + '-' +
-	                $viewport.scrollHeight + ',' + $viewport.scrollWidth;
-	var scrollbar = $viewport.scrollTop    + ',' + $viewport.scrollLeft;
+	const viewport  = $elem.clientHeight     + ',' + $elem.clientWidth     + '-' +
+	                  $viewport.scrollHeight + ',' + $viewport.scrollWidth;
+	const scrollbar = $viewport.scrollTop    + ',' + $viewport.scrollLeft;
 
-	var dataOld = $viewport.dataset.scrollbarjs.split(' ');
+	const dataOld = $viewport.dataset.scrollbarjs.split(' ');
 	if( dataOld[0] !== viewport ){ // element or content size changed
 		updateViewport( $elem, $viewport );
 		updateScrollbars( $elem, $viewport );
@@ -599,7 +590,7 @@ function update( $elem: HTMLElement ){
 		updateScrollbars( $elem, $viewport );
 
 	} else { // nothing changed, so nothing to do
-	 return;
+		return;
 	}
 
 	$viewport.dataset.scrollbarjs = viewport + ' ' + scrollbar;
@@ -614,8 +605,8 @@ requestAnimationFrame( function watch(){
 
 
 return {
-	add: add,
-	init: init
+	add  : add,
+	init : init
 }
 
 }());

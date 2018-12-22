@@ -13,7 +13,7 @@ interface IScrollbarProperties {
     supportsWebkitStyling: boolean;
     supportsMsHiding: boolean;
 }
-declare var scrollbarjs: {
+declare const scrollbarjs: {
     add: ($elem: HTMLElement) => void;
-    init: (config: IConfig) => IScrollbarProperties;
+    init: (config?: IConfig) => IScrollbarProperties;
 };
