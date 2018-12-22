@@ -41,6 +41,7 @@ Limitations
 - Doesn't work with textareas (yet?)
 - Doesn't work with direction:rtl (yet?)
 - `padding-right` doesn't properly work on containers that overflow horizontally. That's not a problem with this script though. This behavior already exists in natively overlflowing containers.
+- While modifying the scrollbar of the body does work, I would suggest against doing so on mobile devices. The autohide behavior of the url bar will break. It would hide only after scrolling all the way to the bottom, and then a bit. Same on the way back up, which is really frustrating.
 
 
 
@@ -81,8 +82,8 @@ You can change some default values by passing an object to `scrollbarjs.init()`.
 - `nativeHeight: number` height of the native scrollbar
 - `nativeWidth: number` width of the native scrollbar
 - `nativeDisplaces: boolean` does the native scrollbar displace the content? (usually desktop browsers do, mobile ones don't)
-- `supportsWebkitStyling boolean` are `::-webkit-scrollbar` pseudo classes supported? (see the [WebKit Blog](https://webkit.org/blog/363/styling-scrollbars/))
-- `supportsMsHiding boolean` is `-ms-overflow-style` supported?
+- `supportsWebkitStyling: boolean` are `::-webkit-scrollbar` pseudo classes supported? (see the [WebKit Blog](https://webkit.org/blog/363/styling-scrollbars/))
+- `supportsMsHiding: boolean` is `-ms-overflow-style` supported?
 
 ```javascript
 var scrollbarProperties = scrollbarjs.init({
@@ -105,7 +106,7 @@ First the script will figure out the native scrollbar width and height. It does 
 
 `scrollbarjs.init()` will add some required CSS styling to the page, as well as adjust some variables, if a fitting object is passed as a paramater.
 
-When adding an element (`$elem`) via `scrollbarjs.add($elem)`, its content will be copied to a newly created div (`$viewport`). `$elem`'s scrollbars will be hidden via the CSS rule `overflow:hidden;` while $viewport will have a negative margin to hide its native scrollbars. This way the mousewheel, arrow keys and other means of scrolling still work like normal. `$viewport` will be placed inside `$elem`, alongside the scrollbars.
+When adding an element (`$elem`) via `scrollbarjs.add($elem)`, its content will be copied to a newly created div (`$viewport`). `$elem`'s scrollbars will be hidden via the CSS rule `overflow:hidden;` while `$viewport` will have a negative margin to hide its native scrollbars. This way the mousewheel, arrow keys and other means of scrolling still work like normal. `$viewport` will be placed inside `$elem`, alongside the scrollbars.
 
 Using `requestAnimationFrame()`, the script will check each frame if a scrollbar or the `$viewport` itself needs to be updated. Therefore the size and scroll position of the `$viewport` will be saved to its dataset. If it changes, the scrollbars will be updated.
 

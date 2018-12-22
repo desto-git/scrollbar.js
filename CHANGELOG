@@ -1,6 +1,7 @@
 1.3.2
 -----
 - reduce file size of scrollbar.min.js (8kb -> 7kb)
+- forget to bump version in scrollbar.min.js copyright comment, oops!
 
 1.3.1
 -----

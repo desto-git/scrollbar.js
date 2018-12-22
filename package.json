@@ -7,7 +7,8 @@
 		"build": "tsc && uglifyjs dist/scrollbar.js -cmo dist/scrollbar.js && node node/banner.js",
 		"sass": "sass src/scrollbar-basic.scss dist/scrollbar-basic.css --no-source-map",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"ts": "tsc -w"
+		"ts": "tsc -w",
+		"version": "npm run build && git add -A"
 	},
 	"repository": {
 		"type": "git",
