@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"declaration": true,
+		"sourceMap": true,
+		"outDir": "dist",
+
+		"strict": true,
+		"strictNullChecks": false, // if an element is null, the browser will throw anyway, so need to do it manually
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+	},
+
+	"include": ["src/*.ts"]
+}

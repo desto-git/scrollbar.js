@@ -6,6 +6,6 @@ const {version, license, homepage} = require('../package.json');
 const repositoryName = homepage.split('/').pop();
 const banner = `// ${repositoryName} v${version} | ${license} | ${homepage}\n`;
 
-prependFile('dist/scrollbar.min.js', banner, (error) => {
+prependFile('dist/scrollbar.js', banner, (error) => {
 	if( error ) throw error;
 });

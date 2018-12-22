@@ -50,7 +50,7 @@ Just include the script, call `scrollbarjs.init()` and add elements via `scrollb
 
 ```html
 <!-- at the end of body -->
-<script src="scrollbar.min.js"></script>
+<script src="scrollbar.js"></script>
 <script>
 	scrollbarjs.init();
 	var $elems = document.getElementsByClassName('custom-scrollbar');
@@ -68,21 +68,21 @@ You might also want to link `scrollbar-basic.css` when starting out. This file c
 ```
 
 You can change some default values by passing an object to `scrollbarjs.init()`.
-- `prefix: (string) [="scrollbarjs"]` the prefix to use for generated classes (don't forget to change the .css accordingly)
-- `buttonDistance: (number) [=60]` the distance to scroll when clicking on a scrollbar button.
+- `prefix: string = "scrollbarjs"` the prefix to use for generated classes (don't forget to change the .css accordingly)
+- `buttonDistance: number = 60` the distance to scroll when clicking on a scrollbar button.
 	If this is an integer, it will scroll by that many pixels.
 	If this is a floating point number, it will be used as a multiplicator (e.g. 0.90 scrolls by 90%). If you want to scroll by 100%, you have to specifiy something really close to it, like 0.9999. That's because JS can't actually differentiate between ints and floats.
-- `trackDistance: (number) [=0.9]` the distance to scroll when clicking on the track (the part between button and thumb).
+- `trackDistance: number = 0.9` the distance to scroll when clicking on the track (the part between button and thumb).
 	Values act the same as above.
-- `delay: (number) [=200]` the time in milliseconds to wait until the mousedown event repeats
-- `repeat: (number) [=50]` the time in milliseconds to wait between repeats
+- `delay: number = 200` the time in milliseconds to wait until the mousedown event repeats
+- `repeat: number = 50` the time in milliseconds to wait between repeats
 
 `scrollbarjs.init()` returns an object containing some information that you might want to make use of:
-- `nativeHeight: (number)` height of the native scrollbar
-- `nativeWidth: (number)` width of the native scrollbar
-- `nativeDisplaces: (boolean)` does the native scrollbar displace the content? (usually desktop browsers do, mobile ones don't)
-- `supportsWebkitStyling (boolean)` are `::-webkit-scrollbar` pseudo classes supported? (see the [WebKit Blog](https://webkit.org/blog/363/styling-scrollbars/))
-- `supportsMsHiding (boolean)` is `-ms-overflow-style` supported?
+- `nativeHeight: number` height of the native scrollbar
+- `nativeWidth: number` width of the native scrollbar
+- `nativeDisplaces: boolean` does the native scrollbar displace the content? (usually desktop browsers do, mobile ones don't)
+- `supportsWebkitStyling boolean` are `::-webkit-scrollbar` pseudo classes supported? (see the [WebKit Blog](https://webkit.org/blog/363/styling-scrollbars/))
+- `supportsMsHiding boolean` is `-ms-overflow-style` supported?
 
 ```javascript
 var scrollbarProperties = scrollbarjs.init({

@@ -4,9 +4,10 @@
 	"description": "A script which produces stylable scrollbars. It also allows styling of the resize handle.",
 	"main": "scrollbar.min.js",
 	"scripts": {
-		"build": "uglifyjs src/scrollbar.js -cmo dist/scrollbar.min.js && node node/banner.js",
+		"build": "tsc && uglifyjs dist/scrollbar.js -cmo dist/scrollbar.js && node node/banner.js",
 		"sass": "sass src/scrollbar-basic.scss dist/scrollbar-basic.css --no-source-map",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"ts": "tsc -w"
 	},
 	"repository": {
 		"type": "git",
@@ -32,6 +33,7 @@
 	"devDependencies": {
 		"prepend-file": "^1.3.1",
 		"sass": "^1.15.2",
+		"typescript": "^3.2.2",
 		"uglify-js": "^3.4.9"
 	}
 }
