@@ -1,4 +1,3 @@
-// scrollbar.js v1.3.0 | MIT | https://github.com/desto-git/scrollbar.js
 var scrollbarjs = (function(){ 'use strict';
 
 /*
