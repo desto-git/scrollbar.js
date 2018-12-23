@@ -82,8 +82,9 @@ You can change some default values by passing an object to `scrollbarjs.init()`.
 - `nativeHeight: number` height of the native scrollbar
 - `nativeWidth: number` width of the native scrollbar
 - `nativeDisplaces: boolean` does the native scrollbar displace the content? (usually desktop browsers do, mobile ones don't)
-- `supportsWebkitStyling: boolean` are `::-webkit-scrollbar` pseudo classes supported? (see the [WebKit Blog](https://webkit.org/blog/363/styling-scrollbars/))
-- `supportsMsHiding: boolean` is `-ms-overflow-style` supported?
+- `supportsWebkitStyling: boolean` are `::-webkit-scrollbar` pseudo classes supported? [WebKit Blog](https://webkit.org/blog/363/styling-scrollbars/)
+- `supportsMsHiding: boolean` is `-ms-overflow-style` supported? [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/-ms-overflow-style)
+- `supportsScrollbarWidth: boolean` is `scrollbar-width` supported? [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-width)
 
 ```javascript
 var scrollbarProperties = scrollbarjs.init({

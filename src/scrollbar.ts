@@ -11,11 +11,12 @@ interface IConfig {
 }
 
 interface IScrollbarProperties {
-	nativeHeight          : number;
-	nativeWidth           : number;
-	nativeDisplaces       : boolean;
-	supportsWebkitStyling : boolean;
-	supportsMsHiding      : boolean;
+	nativeHeight           : number;
+	nativeWidth            : number;
+	nativeDisplaces        : boolean;
+	supportsWebkitStyling  : boolean;
+	supportsMsHiding       : boolean;
+	supportsScrollbarWidth : boolean;
 }
 
 const scrollbarjs = (function(){
@@ -127,11 +128,12 @@ const init = ( config?: IConfig ): IScrollbarProperties => {
 	wasInitialized = true;
 
 	return {
-		nativeHeight          : nativeHeight,
-		nativeWidth           : nativeWidth,
-		nativeDisplaces       : ( nativeHeight > 0 || nativeWidth > 0 ),
-		supportsWebkitStyling : supportsWebkitStyling,
-		supportsMsHiding      : supportsMsHiding,
+		nativeHeight           : nativeHeight,
+		nativeWidth            : nativeWidth,
+		nativeDisplaces        : ( nativeHeight > 0 || nativeWidth > 0 ),
+		supportsWebkitStyling  : supportsWebkitStyling,
+		supportsMsHiding       : supportsMsHiding,
+		supportsScrollbarWidth : supportsScrollbarWidth,
 	};
 }
 
@@ -146,8 +148,9 @@ let nativeHeight = 0;
 
 // additionally, we check for some ways to hide the scrollbar natively (without killing scrolling like overflow:hidden does)
 // in these cases, putting a wrapper around to hide the scrollbars would not be required
-let supportsWebkitStyling = false; // do ::-webkit-scrollbar pseudo classes work? note that these don't seem to work on the body in mobile view
-let supportsMsHiding = false; // does -ms-overflow-style work?
+let supportsWebkitStyling  = false; // note that these don't seem to work on the body in mobile view
+let supportsMsHiding       = false;
+let supportsScrollbarWidth = false;
 
 (function(){ // scoping to pretent it didn't happen
 
@@ -173,19 +176,21 @@ let supportsMsHiding = false; // does -ms-overflow-style work?
 	// check if native tricks are available to hide scrollbars
 	$style.innerHTML +=
 		'#scrollbarjs-sb-size::-webkit-scrollbar{display:none}' + // webkit
-		'#scrollbarjs-sb-size{-ms-overflow-style:none}'; // ie and edge
+		'#scrollbarjs-sb-size{' +
+			'-ms-overflow-style:none;' + // ie and edge
+			'scrollbar-width:none;' + // firefox
+		'}';
 
 	try{
-		if( getComputedStyle( $size, '::-webkit-scrollbar' ).display === 'none' ){
-			supportsWebkitStyling = true;
-		}
+		supportsWebkitStyling = getComputedStyle( $size, '::-webkit-scrollbar' ).display === 'none';
 	}catch(e){
-		// Firefox throws when checking an unknown pseudo element (NS_ERROR_NOT_AVAILABLE)
+		// Firefox 56 throws when checking an unknown pseudo element (NS_ERROR_NOT_AVAILABLE)
 	}
 
-	if( getComputedStyle( $size ).msOverflowStyle === 'none' ){
-		supportsMsHiding = true;
-	}
+	const computedStyle = getComputedStyle( $size );
+	supportsMsHiding = computedStyle.msOverflowStyle === 'none';
+	// @ts-ignore property is still new
+	supportsScrollbarWidth = computedStyle.scrollbarWidth === 'none';
 
 	$style.parentElement.removeChild( $style );
 	$size .parentElement.removeChild( $size  );
