@@ -51,7 +51,7 @@ let configRepeat = 50; // repeat every x milliseconds
 const doc = document;
 const $head = doc.head as HTMLHeadElement;
 const $body = doc.body;
-const createElement = doc.createElement.bind( doc );
+const createElement = doc.createElement.bind( doc ) as ( tagName: string ) => HTMLElement;
 
 const appendChild = ( $parent: HTMLElement, $child: HTMLElement ) => {
 	$parent.appendChild( $child );
@@ -67,6 +67,9 @@ const addEventListener = <K extends keyof HTMLElementEventMap>(
 
 const addClass = ( $elem: Element, className: string ) => { $elem.classList.add   ( className ); }
 const remClass = ( $elem: Element, className: string ) => { $elem.classList.remove( className ); }
+
+// not-booleans are usually more readable in their positive form, but since this is only checked in the negative form it should be ok
+const isNotLeftClick = ( event: MouseEvent ) => ( event.buttons & 1 ) !== 1; // this also works for mouseenter
 
 
 
@@ -188,23 +191,27 @@ let supportsMsHiding = false; // does -ms-overflow-style work?
 	$size .parentElement.removeChild( $size  );
 }());
 
-const DRAG_MODE_NONE   = 0;
-const DRAG_MODE_SCROLL = 1;
-const DRAG_MODE_RESIZE = 2;
-let dragMode = DRAG_MODE_NONE;
+const enum DragMode {
+	none,
+	scroll,
+	resize,
+}
+let dragMode = DragMode.none;
 
-const DRAG_AXIS_NONE = 0;
-const DRAG_AXIS_VER  = 1;
-const DRAG_AXIS_HOR  = 2;
-const DRAG_AXIS_BOTH = 3;
-let dragAxis = DRAG_AXIS_NONE;
+enum Axis {
+	none,
+	ver,
+	hor,
+	both,
+}
+let dragAxis = Axis.none;
 
 let $dragTarget: HTMLElement | null; // the content being scrolled
 
 const reset = () => {
 	clearInterval( IID );
-	clearTimeout(  TID );
-	dragMode = DRAG_MODE_NONE;
+	clearTimeout ( TID );
+	dragMode = DragMode.none;
 	remClass( $body, getPrefixed('drag') );
 	if( $dragTarget ){
 		remClass( $dragTarget.parentElement, getPrefixed('active') );
@@ -214,7 +221,7 @@ const reset = () => {
 addEventListener( $body, 'mouseup', reset );
 addEventListener( $body, 'mouseenter', e => {
 	// leaving browser window and going back in, check if left mouse button is "still" pressed
-	if( ( e.buttons & 1 ) !== 1 ) reset();
+	if( isNotLeftClick( e ) ) reset();
 } );
 
 let lastX = 0;
@@ -222,9 +229,9 @@ let lastY = 0; // last x y offset
 let dragDistance = 0; // distance to scroll in pixels for each pixel the thumb has been moved
 let viewportScrollPosition = 0; // the current x or y position as a double instead of an int, used to circumvent unprecise dragging
 addEventListener( $body, 'mousemove', e => {
-	if( dragMode === DRAG_MODE_SCROLL ){
+	if( dragMode === DragMode.scroll ){
 
-		if( dragAxis === DRAG_AXIS_VER ){
+		if( dragAxis === Axis.ver ){
 			viewportScrollPosition += dragDistance * ( e.clientY - lastY );
 			scrollViewport( $dragTarget, undefined, Math.round( viewportScrollPosition ), true );
 
@@ -233,7 +240,7 @@ addEventListener( $body, 'mousemove', e => {
 			scrollViewport( $dragTarget, Math.round( viewportScrollPosition ), undefined, true );
 		}
 
-	} else if( dragMode === DRAG_MODE_RESIZE ){
+	} else if( dragMode === DragMode.resize && dragAxis !== Axis.none ){
 		// inconsistent behavior between browsers when resizing centered content
 		// chrome's way makes more sense (resize by twice the amount when centered so it keeps following the cursor properly)
 		// but firefox' is easier to implement, as I don't need to check for all the ways the content could be centered (margin: 0 auto, flexbox, text-align,..?)
@@ -241,14 +248,14 @@ addEventListener( $body, 'mousemove', e => {
 		const x = ( e.clientX - lastX );
 		const y = ( e.clientY - lastY );
 
-		if( dragAxis !== DRAG_AXIS_HOR  ){ // VER or BOTH
+		if( dragAxis !== Axis.hor  ){ // VER or BOTH
 			const h = $dragTarget.clientHeight;
 			$dragTarget.style.height = h + y + 'px';
 			// verify if height is legit, e.g. in case max-height is set
 			$dragTarget.style.height = getComputedStyle( $dragTarget ).height;
 		}
 
-		if( dragAxis !== DRAG_AXIS_VER  ){ // HOR or BOTH
+		if( dragAxis !== Axis.ver  ){ // HOR or BOTH
 			const w = $dragTarget.clientWidth;
 			$dragTarget.style.width = w + x + 'px';
 			$dragTarget.style.width = getComputedStyle( $dragTarget ).width;
@@ -262,48 +269,35 @@ addEventListener( $body, 'mousemove', e => {
 
 
 // event listeners
-const BUTTON_UP    = 0;
-const BUTTON_RIGHT = 1;
-const BUTTON_DOWN  = 2;
-const BUTTON_LEFT  = 3;
-const clickButton = ( event: MouseEvent, $viewport: HTMLElement, direction: number ) => {
-	if( event.button !== 0 ) return; // only work on left click
-
-	switch( direction ){
-		case BUTTON_UP:    scrollViewport( $viewport, 0, -configButtonDistance    ); break;
-		case BUTTON_RIGHT: scrollViewport( $viewport,     configButtonDistance, 0 ); break;
-		case BUTTON_DOWN:  scrollViewport( $viewport, 0,  configButtonDistance    ); break;
-		case BUTTON_LEFT:  scrollViewport( $viewport,    -configButtonDistance, 0 ); break;
-	}
+enum Direction {
+	up,
+	right,
+	down,
+	left,
 }
-
-const TRACK_UP    = 0;
-const TRACK_RIGHT = 1;
-const TRACK_DOWN  = 2;
-const TRACK_LEFT  = 3;
-const clickTrack = ( event: MouseEvent, $viewport: HTMLElement, direction: number ) => {
-	if( event.button !== 0 ) return;
+const scrollInDirection = ( event: MouseEvent, $viewport: HTMLElement, direction: number, distance: number ) => {
+	if( isNotLeftClick( event ) ) return;
 
 	switch( direction ){
-		case TRACK_UP:    scrollViewport( $viewport, 0, -configTrackDistance    ); break;
-		case TRACK_RIGHT: scrollViewport( $viewport,     configTrackDistance, 0 ); break;
-		case TRACK_DOWN:  scrollViewport( $viewport, 0,  configTrackDistance    ); break;
-		case TRACK_LEFT:  scrollViewport( $viewport,    -configTrackDistance, 0 ); break;
+		case Direction.up    : scrollViewport( $viewport, 0, -distance    ); break;
+		case Direction.right : scrollViewport( $viewport,     distance, 0 ); break;
+		case Direction.down  : scrollViewport( $viewport, 0,  distance    ); break;
+		case Direction.left  : scrollViewport( $viewport,    -distance, 0 ); break;
 	}
 }
 
 const clickThumb = ( event: MouseEvent, $viewport: HTMLElement, direction: number ) => {
-	if( event.button !== 0 ) return;
+	if( isNotLeftClick( event ) ) return;
 
 	addClass( $body, getPrefixed('drag') );
 	addClass( $viewport.parentElement, getPrefixed('active') );
 
 	const $target = (event.target as HTMLElement).parentElement;
-	dragMode = DRAG_MODE_SCROLL;
+	dragMode = DragMode.scroll;
 	dragAxis = direction;
 	$dragTarget = $viewport;
 
-	if( direction === DRAG_AXIS_VER ){
+	if( direction === Axis.ver ){
 		viewportScrollPosition = $viewport.scrollTop;
 		dragDistance = $viewport.scrollHeight / $target.clientHeight;
 	} else {
@@ -313,11 +307,11 @@ const clickThumb = ( event: MouseEvent, $viewport: HTMLElement, direction: numbe
 }
 
 const clickResize = ( event: MouseEvent, $elem: HTMLElement, direction: number ) => {
-	if( event.button !== 0 ) return;
+	if( isNotLeftClick( event ) ) return;
 
 	addClass( $body, getPrefixed('drag') );
 
-	dragMode = DRAG_MODE_RESIZE;
+	dragMode = DragMode.resize;
 	dragAxis = direction;
 	$dragTarget = $elem;
 }
@@ -367,126 +361,87 @@ const $ELEMS: HTMLElement[] = [];
 const add = ( $elem: HTMLElement ) => {
 	if( !wasInitialized ) return; // do nothing if scrollbarjs hasn't been initialized yet; that is to prevent weird behavior caused by missing CSS rules
 
-	let $viewport: HTMLElement;
+	let viewportTagName: string;
 
 	if( $elem.tagName === 'BODY' ){
-		$viewport = createElement('div');
+		viewportTagName = 'div';
 
 	} else if( $elem.tagName === 'TEXTAREA' ){
 		// TODO: make textareas work
-		$viewport = createElement('div');
+		viewportTagName = 'div';
 
 	} else {
-		$viewport = createElement( $elem.tagName );
+		viewportTagName = $elem.tagName;
 	}
 
-	addClass( $elem, configPrefix );
+	const buildElement = ( class1: string, class2?: string, tagName: string = 'div' ) => {
+		const $element = createElement(tagName);
+		$element.className = getPrefixed(class1, class2);
+		return $element;
+	}
 
-	$viewport.className = getPrefixed('viewport');
+	const $viewport = buildElement('viewport', undefined, viewportTagName);
 	$viewport.dataset.scrollbarjs = ' '; // a space so I don't have to do additional checks in the update function
 	$viewport.innerHTML = $elem.innerHTML;
 
 	$elem.innerHTML = '';
 	appendChild( $elem, $viewport );
 
-	// create scrollbars; naming similar to https://webkit.org/blog/363/styling-scrollbars/
-	// vertical
-	const $ver = createElement('aside');
-	$ver.className = getPrefixed('scrollbar', 'ver');
+	// naming similar to https://webkit.org/blog/363/styling-scrollbars/
+	const buildScrollbar = (axis: 'ver' | 'hor', dir1: 'up' | 'left', dir2: 'down' | 'right') => {
+		const buildButton = ( direction: keyof typeof Direction ) => {
+			const $button = buildElement('button', direction);
+			addEventListener( $button, 'mousedown', e => scrollInDirection( e, $viewport, Direction[direction], configButtonDistance ) );
 
-	const $up = createElement('div');
-	$up.className = getPrefixed('button', 'up');
-	addEventListener( $up, 'mousedown', e => clickButton( e, $viewport, BUTTON_UP ) );
+			return $button;
+		}
 
-	const $trackVer = createElement('div');
-	$trackVer.className = getPrefixed('track', 'track-ver');
+		const buildTrack = ( direction: keyof typeof Direction ) => {
+			const $track = buildElement('track-piece', 'track-' + direction);
+			addEventListener( $track, 'mousedown', e => scrollInDirection( e, $viewport, Direction[direction], configTrackDistance ) );
 
-	const $trackUp = createElement('div');
-	$trackUp.className = getPrefixed('track-piece', 'track-up');
-	addEventListener( $trackUp, 'mousedown', e => clickTrack( e, $viewport, TRACK_UP ) );
+			return $track;
+		}
 
-	const $thumbVer = createElement('div');
-	$thumbVer.className = getPrefixed('thumb', 'thumb-ver');
-	addEventListener( $thumbVer, 'mousedown', e => clickThumb( e, $viewport, DRAG_AXIS_VER ) );
+		const $trackAxis = buildElement('track', 'track-' + axis);
+		const $thumbAxis = buildElement('thumb', 'thumb-' + axis);
+		addEventListener( $thumbAxis, 'mousedown', e => clickThumb( e, $viewport, Axis[axis] ) );
+		appendChild( $trackAxis, buildTrack( dir1 ) );
+		appendChild( $trackAxis, $thumbAxis         );
+		appendChild( $trackAxis, buildTrack( dir2 ) );
 
-	const $trackDown = createElement('div');
-	$trackDown.className = getPrefixed('track-piece', 'track-down');
-	addEventListener( $trackDown, 'mousedown', e => clickTrack( e, $viewport, TRACK_DOWN ) );
+		const $axis = buildElement('scrollbar', axis, 'aside');
+		appendChild( $axis, buildButton( dir1 ) );
+		appendChild( $axis, $trackAxis          );
+		appendChild( $axis, buildButton( dir2 ) );
 
-	appendChild( $trackVer, $trackUp   );
-	appendChild( $trackVer, $thumbVer  );
-	appendChild( $trackVer, $trackDown );
+		return $axis;
+	}
 
-	const $down = createElement('div');
-	$down.className = getPrefixed('button', 'down');
-	addEventListener( $down, 'mousedown', e => clickButton( e, $viewport, BUTTON_DOWN ) );
-
-	appendChild( $ver, $up       );
-	appendChild( $ver, $trackVer );
-	appendChild( $ver, $down     );
-
-	// horizontal
-	const $hor = createElement('aside');
-	$hor.className = getPrefixed('scrollbar', 'hor');
-
-	const $left = createElement('div');
-	$left.className = getPrefixed('button', 'left');
-	addEventListener( $left, 'mousedown', e => clickButton( e, $viewport, BUTTON_LEFT ) );
-
-	const $trackHor = createElement('div');
-	$trackHor.className = getPrefixed('track', 'track-hor');
-
-	const $trackLeft = createElement('div');
-	$trackLeft.className = getPrefixed('track-piece', 'track-left');
-	addEventListener( $trackLeft, 'mousedown', e => clickTrack( e, $viewport, TRACK_LEFT ) );
-
-	const $thumbHor = createElement('div');
-	$thumbHor.className = getPrefixed('thumb', 'thumb-hor');
-	addEventListener( $thumbHor, 'mousedown', e => clickThumb( e, $viewport, DRAG_AXIS_HOR ) );
-
-	const $trackRight = createElement('div');
-	$trackRight.className = getPrefixed('track-piece', 'track-right');
-	addEventListener( $trackRight, 'mousedown', e => clickTrack( e, $viewport, TRACK_RIGHT ) );
-
-	appendChild( $trackHor, $trackLeft  );
-	appendChild( $trackHor, $thumbHor   );
-	appendChild( $trackHor, $trackRight );
-
-	const $right = createElement('div');
-	$right.className = getPrefixed('button', 'right');
-	addEventListener( $right, 'mousedown', e => clickButton( e, $viewport, BUTTON_RIGHT ) );
-
-	appendChild( $hor, $left     );
-	appendChild( $hor, $trackHor );
-	appendChild( $hor, $right    );
-
-	appendChild( $elem, $ver );
-	appendChild( $elem, $hor );
+	appendChild( $elem, buildScrollbar('ver', 'up'  , 'down' ) );
+	appendChild( $elem, buildScrollbar('hor', 'left', 'right') );
 
 	// corner
-	const $corner = createElement('aside');
-	$corner.className = getPrefixed('corner');
+	const $corner = buildElement('corner');
 
 	const resize = getComputedStyle( $elem ).resize; // cannot be detected in Edge
 	if( resize === 'both' || resize === 'horizontal' || resize === 'vertical' ){
 		addClass( $elem, getPrefixed('resizable') );
 
-		let direction: number;
-		let directionClass;
+		let axis: keyof typeof Axis;
 		switch( resize ){
-			case 'vertical':   direction = DRAG_AXIS_VER;  directionClass = 'ver';  break;
-			case 'horizontal': direction = DRAG_AXIS_HOR;  directionClass = 'hor';  break;
-			case 'both':       direction = DRAG_AXIS_BOTH; directionClass = 'both'; break;
+			case 'vertical':   axis = 'ver';  break;
+			case 'horizontal': axis = 'hor';  break;
+			case 'both':       axis = 'both'; break;
 		}
 
-		addClass( $corner, getPrefixed('resize-' + directionClass) );
-		addEventListener( $corner, 'mousedown', e => clickResize( e, $elem, direction ) );
+		addClass( $corner, getPrefixed('resize-' + axis) );
+		addEventListener( $corner, 'mousedown', e => clickResize( e, $elem, Axis[axis] ) );
 	}
 
 	appendChild( $elem, $corner );
 
-
-
+	addClass( $elem, configPrefix );
 	$ELEMS.push( $elem );
 }
 
@@ -498,7 +453,7 @@ const updateViewport = ( $elem: HTMLElement, $viewport: HTMLElement ) => {
 	// Firefox won't remember the scrollTop position after a reload, but I think that's bearable ;)
 	if( $elem.clientHeight < $viewport.scrollHeight ){ // check if the element can grow
 
-		var y = $viewport.scrollTop; // keep scrolling distance
+		const y = $viewport.scrollTop; // keep scrolling distance
 		$viewport.style.height = ''; // try to be as big as the content
 
 		if( $elem.clientHeight < $viewport.scrollHeight ) // if that doesn't work, shrink to fit
@@ -525,11 +480,17 @@ const updateScrollbars = ( $elem: HTMLElement, $viewport: HTMLElement ) => {
 	else if( visibleHeight === 1 && visibleWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_HOR  );
 	else if( visibleHeight !== 1 && visibleWidth !== 1 ) switchScrollClass( $elem, CLASS_SCROLL_BOTH );
 
+	const getChild = ( $parent: HTMLElement, child: number, grandChild?: number ) => {
+		let $child = $parent.children[ child ];
+		if( grandChild !== undefined ) $child = $child.children[ grandChild ];
+		return $child as HTMLElement;
+	}
+
 	// apply extra classes to indicate if a button will do something
-	const $buttonUp    = $elem.children[1].children[0];
-	const $buttonDown  = $elem.children[1].children[2];
-	const $buttonLeft  = $elem.children[2].children[0];
-	const $buttonRight = $elem.children[2].children[2];
+	const $buttonUp    = getChild( $elem, 1, 0 );
+	const $buttonDown  = getChild( $elem, 1, 2 );
+	const $buttonLeft  = getChild( $elem, 2, 0 );
+	const $buttonRight = getChild( $elem, 2, 2 );
 
 	if( $viewport.scrollTop  === 0 ) addClass( $buttonUp,   CLASS_BUTTON_INACTIVE );
 	else                             remClass( $buttonUp,   CLASS_BUTTON_INACTIVE );
@@ -542,15 +503,15 @@ const updateScrollbars = ( $elem: HTMLElement, $viewport: HTMLElement ) => {
 	else                                                                               remClass( $buttonRight, CLASS_BUTTON_INACTIVE );
 
 	// calculate thumb size
-	const $trackVer  = $elem.children[1].children[1];
-	const $trackUp   = $trackVer.children[0] as HTMLElement;
-	const $thumbVer  = $trackVer.children[1] as HTMLElement;
-	const $trackDown = $trackVer.children[2] as HTMLElement;
+	const $trackVer  = getChild( $elem,  1, 1 );
+	const $trackUp   = getChild( $trackVer, 0 );
+	const $thumbVer  = getChild( $trackVer, 1 );
+	const $trackDown = getChild( $trackVer, 2 );
 
-	const $trackHor   = $elem.children[2].children[1];
-	const $trackLeft  = $trackHor.children[0] as HTMLElement;
-	const $thumbHor   = $trackHor.children[1] as HTMLElement;
-	const $trackRight = $trackHor.children[2] as HTMLElement;
+	const $trackHor   = getChild( $elem,  2, 1 );
+	const $trackLeft  = getChild( $trackHor, 0 );
+	const $thumbHor   = getChild( $trackHor, 1 );
+	const $trackRight = getChild( $trackHor, 2 );
 
 	const trackHeight = $trackVer.clientHeight;
 	const trackWidth  = $trackHor.clientWidth;
@@ -558,8 +519,8 @@ const updateScrollbars = ( $elem: HTMLElement, $viewport: HTMLElement ) => {
 	// height/width of track-up/track-left
 	const trackUpHeight  = Math.floor( trackHeight * ( $viewport.scrollTop  / $viewport.scrollHeight ) );
 	const trackLeftWidth = Math.floor( trackWidth  * ( $viewport.scrollLeft / $viewport.scrollWidth  ) );
-	$trackUp.style.height  = trackUpHeight  + 'px';
-	$trackLeft.style.width = trackLeftWidth + 'px';
+	$trackUp  .style.height = trackUpHeight  + 'px';
+	$trackLeft.style.width  = trackLeftWidth + 'px';
 
 	// height/width of the thumb
 	const thumbHeight = Math.ceil( trackHeight * visibleHeight );
@@ -570,8 +531,8 @@ const updateScrollbars = ( $elem: HTMLElement, $viewport: HTMLElement ) => {
 	// height/width of track-down/track-right
 	const trackDownHeight = trackHeight - trackUpHeight  - thumbHeight;
 	const trackRightWidth = trackWidth  - trackLeftWidth - thumbWidth;
-	$trackDown.style.height = trackDownHeight + 'px';
-	$trackRight.style.width = trackRightWidth + 'px';
+	$trackDown .style.height = trackDownHeight + 'px';
+	$trackRight.style.width  = trackRightWidth + 'px';
 }
 
 const update = ( $elem: HTMLElement ) => {
