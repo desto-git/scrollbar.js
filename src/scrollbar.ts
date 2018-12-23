@@ -359,7 +359,7 @@ const scrollViewport = ( $viewport: HTMLElement, x?: number, y?: number, jump?: 
 // contains all the containers to watch over so we don't have to read the entire DOM every time update is called just to find our elements
 const $ELEMS: HTMLElement[] = [];
 const add = ( $elem: HTMLElement ) => {
-	if( !wasInitialized ) return; // do nothing if scrollbarjs hasn't been initialized yet; that is to prevent weird behavior caused by missing CSS rules
+	if( !wasInitialized ) throw new Error('scrollbarjs has not been initialized yet'); // this is to prevent weird behavior caused by missing CSS rules
 
 	let viewportTagName: string;
 
