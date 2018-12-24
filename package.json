@@ -1,6 +1,6 @@
 {
 	"name": "@desto/scrollbar-js",
-	"version": "1.3.2",
+	"version": "1.4.0",
 	"description": "A script which produces stylable scrollbars. It also allows styling of the resize handle.",
 	"main": "scrollbar.min.js",
 	"scripts": {
