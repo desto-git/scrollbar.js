@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>scrollbar.js</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<link rel="stylesheet" href="style.css">
 	<link rel="stylesheet" href="../dist/scrollbar-basic.css">
 </head>
@@ -11,19 +12,58 @@
 
 	<h1>scrollbar.js</h1>
 
-	<!-- https://www.flickr.com/photos/mathiasappel/25193861686 -->
-	<div id="image" class="scrollable resizable sbjs">
-		<img src="panda_1024.jpg" width=1024 height=678 alt="Red Panda by Mathias Appel">
+	<div class="wrapper">
+		<div class="content scrollable resizable">
+			<p>This div is just a regular overflowing div. It has not been altered by scrollbar.js.</p>
+			<p>It can also be resized. No wait! It cannot be resized in IE, Edge and mobile browsers it seems! :(</p>
+		</div>
+
+		<div class="scrollable resizable sbjs">
+			<p>Here scrollbar.js has been applied. The scrollbar and it's components can be styled via CSS.</p>
+			<p>The native scrolling behavior is kept intact. As such the following means of scrolling still apply and act as usual:</p>
+			<ul>
+				<li>Mouse wheel</li>
+				<li>Autoscroll</li>
+				<li>Arrow keys</li>
+				<li>Page up/down keys</li>
+				<li>Selecting text beyond the visible viewport</li>
+				<li>Scrolling the outer box once the end has been reached</li>
+			</ul>
+			<p>
+				A stylable resize handle has also been added. It acts like a polyfill for IE.<br>
+				Sadly it does not apply to Edge, because it won't report if the CSS resize property exists on the element.
+			</p>
+			<p>On mobile it doesn't work because no touch actions have been implemented yet. <a>#2</a></p>
+		</div>
+
+		<div id="nowrap" class="content scrollable resizable sbjs">
+			<p>
+				This one can be scrolled on both axes.<br>
+				There is also a behavior that is kept intact on touch devices.
+			</p>
+			<ul>
+				<li>Scrolling will lock onto an axes when no clear diagonal movement is registered</li>
+			</ul>
+		</div>
+
+		<div class="scrollable resizable sbjs">
+			<p>It works on any content. <a href="https://www.flickr.com/photos/mathiasappel/25193861686">Red Panda by Mathias Appel</a></p>
+			<img src="panda_1024.jpg" width=1024 height=678 alt="Red Panda by Mathias Appel">
+		</div>
+
+		<div class="scrollable resizable sbjs">
+			<p>The script will check in real-time if the size of the content has changed and updates the scrollbar size accordingly.</p>
+			<p>It will also detect if the scrollbar is needed in the first place or if the content fits even without scrolling.</p>
+			<p>
+				<button id="add-p">Add paragraph</button>
+				<button id="clr-p">Clear</button>
+			</p>
+			<div id="p-target"></div>
+		</div>
+
+		<!-- <textarea class="scrollable content"></textarea> -->
 	</div>
 
-	<div id="nowrap" class="content scrollable resizable sbjs"></div>
-
-	<div id="regular" class="content scrollable"></div>
-
-	<div id="ver" class="content scrollable sbjs"></div>
-	<div id="ver-resize" class="content scrollable sbjs resizable"></div>
-
-	<!--<textarea class="scrollable content"></textarea>-->
 
 	<script src="script.js"></script>
 	<script src="../dist/scrollbar.js"></script>
@@ -33,6 +73,17 @@
 		for( var i = 0; i < $elems.length; ++i ){
 			scrollbarjs.add( $elems[i] );
 		}
+	</script>
+
+	<script>
+		// add paragraph button
+		var pTarget = document.getElementById('p-target');
+		document.getElementById('add-p').addEventListener('click', function(){
+			addP( pTarget, 1 );
+		});
+		document.getElementById('clr-p').addEventListener('click', function(){
+			pTarget.innerHTML = '';
+		});
 	</script>
 </body>
 </html>

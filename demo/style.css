@@ -1,31 +1,29 @@
 body {
 	margin: 0;
-	text-align: center;
+	box-sizing: border-box;
+	font-size: 1.1rem;
 }
-
-img { display: block; }
 
 h1 {
 	background: #CCC;
 	margin: 0;
 	padding: 20px;
+	text-align: center;
 }
 
-.content { text-align: left; }
+.wrapper {
+	margin: 0 auto;
+	max-width: 900px;
+}
+.lorem { color: #AAA; }
 
 .scrollable {
 	border: 1px solid #AAA;
-	height: 200px;
-	margin: 16px auto;
-	font-size: 1.1rem;
+	height: 250px;
 	overflow: auto;
-	width: 800px;
+	margin: 1.5rem;
 }
-
-#nowrap { white-space: nowrap; }
-
 .resizable { resize: both; }
-#ver-resize { resize: vertical; }
 
-.resizable .scrollbarjs-ver-wrapper { margin-bottom: 16px; }
-.resizable .scrollbarjs-hor-wrapper { margin-right:  16px; }
+img { display: block; } /* removes baseline margin at the bottom */
+#nowrap { white-space: nowrap; }
