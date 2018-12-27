@@ -62,7 +62,7 @@ Just include the script, call `scrollbarjs.init()` and add elements via `scrollb
 </body>
 ```
 
-You might also want to link `scrollbar-basic.css` when starting out. This file contains some basic styling.
+You might also want to link `src/scrollbar-basic.css` when starting out. This file contains some basic styling.
 
 ```html
 <link rel="stylesheet" href="scrollbar-basic.css">
