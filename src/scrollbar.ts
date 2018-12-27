@@ -76,6 +76,7 @@ const isNotLeftClick = ( event: MouseEvent ) => ( event.buttons & 1 ) !== 1; // 
 
 // getPrefixed( 'viewport', 'fit-parent' ) => "configPrefix-viewport configPrefix-fit-parent"
 const getPrefixed = ( ...args: string[] ) => {
+	args = args.filter( arg => arg !== undefined ); // otherwise configPrefix-undefined would be applied
 	return args.map( arg => configPrefix + '-' + arg ).join(' ');
 }
 
