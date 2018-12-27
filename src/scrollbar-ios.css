@@ -1,0 +1,102 @@
+/* visibility */
+.scrollbarjs-ver,
+.scrollbarjs-hor,
+.scrollbarjs-button,
+.scrollbarjs-corner {
+	display: none;
+}
+
+.scrollbarjs-scroll-ver  > .scrollbarjs-ver,
+.scrollbarjs-scroll-hor  > .scrollbarjs-hor,
+.scrollbarjs-scroll-both > .scrollbarjs-ver,
+.scrollbarjs-scroll-both > .scrollbarjs-hor,
+.scrollbarjs-resizable   > .scrollbarjs-corner {
+	display: block;
+}
+
+.scrollbarjs-scrollbar {
+	transition: .4s opacity;
+	opacity: 0;
+}
+
+.scrollbarjs-track-hor > div {
+	height: 100%; /* so we can see them */
+	float: left; /* so they won't push each other to new lines */
+	/* display: inline-block; for some reason makes firefox move it down 1px; letting it float fixes it */
+}
+
+
+
+/* rough positioning */.scrollbarjs >
+.scrollbarjs-scrollbar,
+.scrollbarjs-track,
+.scrollbarjs-corner {
+	position: absolute;
+}
+
+/* height: 100%; width: 100% for absolutely positioned elements
+   width/height:100% isn't as reliable since they need a parent with these explicitly set to work */
+.scrollbarjs-track {
+	top: 2px; right: 2px; bottom: 2px; left: 2px;
+}
+
+.scrollbarjs-corner { bottom: 0; right: 0 }
+
+
+
+/* dimensions */
+
+/* let scrollbars take up space, useful for opaque ones, however note that this doesn't seem work if the content can't wrap to a new line */
+/*
+.scrollbarjs-viewport {
+	padding-right: 20px;
+}
+*/
+
+/* this is a reliable way to add padding-bottom to the viewport */
+/*
+.scrollbarjs-viewport::after {
+	content: ''; display: block;
+	height: 16px;
+}
+*/
+
+.scrollbarjs-ver {
+	top: 0; right: 0; bottom: 0;
+	width: 12px;
+}
+.scrollbarjs-hor {
+	right: 0; bottom: 0; left: 0;
+	height: 12px;
+}
+.scrollbarjs-corner {
+	margin: 2px;
+	border: 6px solid transparent;
+}
+
+.scrollbarjs-scroll-both > .scrollbarjs-ver,
+.scrollbarjs-resizable   > .scrollbarjs-ver {
+	margin-bottom: 16px;
+}
+.scrollbarjs-scroll-both > .scrollbarjs-hor,
+.scrollbarjs-resizable   > .scrollbarjs-hor {
+	margin-right: 16px;
+}
+
+
+
+/* color */
+.scrollbarjs:hover > .scrollbarjs-scrollbar,
+.scrollbarjs-corner {
+	transition: 0s opacity;
+	opacity: .8;
+}
+
+.scrollbarjs-thumb  {
+	background: #BBB;
+	border-radius: 4px;
+}
+
+.scrollbarjs-resizable > .scrollbarjs-corner {
+	border-color: transparent #888 #888 transparent;
+}
