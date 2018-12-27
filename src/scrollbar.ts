@@ -33,8 +33,6 @@ const scrollbarjs = (function(){
 	- `smooth: (boolean) [=true]` should the emulated scrolling be smoothed?
 	- `easing: (function) [=easeInOutQuad]` https://gist.github.com/gre/1650294
 	probably more
-
-	a more attractive demo site which also explains things in its scrollable boxes
 */
 
 // don't forget to change your css accordingly
@@ -54,6 +52,7 @@ const doc = document;
 const $head = doc.head as HTMLHeadElement;
 const $body = doc.body;
 const createElement = doc.createElement.bind( doc ) as ( tagName: string ) => HTMLElement;
+const getCompStyle = getComputedStyle;
 
 const appendChild = ( $parent: HTMLElement, $child: HTMLElement ) => {
 	$parent.appendChild( $child );
@@ -155,11 +154,12 @@ let supportsMsOverflow     = false;
 let supportsScrollbarWidth = false;
 
 (function(){ // scoping to pretent it didn't happen
+	const id = 'scrollbarjs-sb-size';
 
 	// add styles required for this to work
 	const $style = createElement('style');
 	appendChild( $head, $style );
-	$style.innerHTML = '#scrollbarjs-sb-size{' +
+	$style.innerHTML = '#' + id + '{' +
 		'width:100%;'        + // it needs to be bigger than the scrollbar
 		'height:100%;'       +
 		'overflow:scroll;'   + // show scrollbars
@@ -169,7 +169,7 @@ let supportsScrollbarWidth = false;
 
 	// get dimensions of native scrollbars
 	const $size = createElement('div');
-	$size.id = 'scrollbarjs-sb-size';
+	$size.id = id;
 	appendChild( $body, $size );
 
 	nativeWidth  = $size.offsetWidth  - $size.clientWidth;
@@ -177,19 +177,19 @@ let supportsScrollbarWidth = false;
 
 	// check if native tricks are available to hide scrollbars
 	$style.innerHTML +=
-		'#scrollbarjs-sb-size::-webkit-scrollbar{display:none}' + // webkit
-		'#scrollbarjs-sb-size{' +
+		'#' + id + '::-webkit-scrollbar{display:none}' + // webkit
+		'#' + id + '{' +
 			'-ms-overflow-style:none;' + // ie and edge
 			'scrollbar-width:none;' + // firefox
 		'}';
 
 	try{
-		supportsWebkitStyling = getComputedStyle( $size, '::-webkit-scrollbar' ).display === 'none';
+		supportsWebkitStyling = getCompStyle( $size, '::-webkit-scrollbar' ).display === 'none';
 	}catch(e){
 		// Firefox 56 throws when checking an unknown pseudo element (NS_ERROR_NOT_AVAILABLE)
 	}
 
-	const computedStyle = getComputedStyle( $size );
+	const computedStyle = getCompStyle( $size );
 	supportsMsOverflow = computedStyle.msOverflowStyle === 'none';
 	// @ts-ignore property is still new
 	supportsScrollbarWidth = computedStyle.scrollbarWidth === 'none';
@@ -259,13 +259,13 @@ addEventListener( $body, 'mousemove', e => {
 			const h = $dragTarget.clientHeight;
 			$dragTarget.style.height = h + y + 'px';
 			// verify if height is legit, e.g. in case max-height is set
-			$dragTarget.style.height = getComputedStyle( $dragTarget ).height;
+			$dragTarget.style.height = getCompStyle( $dragTarget ).height;
 		}
 
 		if( dragAxis !== Axis.ver  ){ // HOR or BOTH
 			const w = $dragTarget.clientWidth;
 			$dragTarget.style.width = w + x + 'px';
-			$dragTarget.style.width = getComputedStyle( $dragTarget ).width;
+			$dragTarget.style.width = getCompStyle( $dragTarget ).width;
 		}
 	}
 
@@ -431,7 +431,7 @@ const add = ( $elem: HTMLElement ) => {
 	// corner
 	const $corner = buildElement('corner');
 
-	const resize = getComputedStyle( $elem ).resize; // cannot be detected in Edge
+	const resize = getCompStyle( $elem ).resize; // cannot be detected in Edge
 	if( resize === 'both' || resize === 'horizontal' || resize === 'vertical' ){
 		addClass( $elem, getPrefixed('resizable') );
 
