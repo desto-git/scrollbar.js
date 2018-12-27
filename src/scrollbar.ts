@@ -17,6 +17,7 @@ interface IScrollbarProperties {
 	supportsWebkitStyling  : boolean;
 	supportsMsHiding       : boolean;
 	supportsScrollbarWidth : boolean;
+	supportsNativeHiding   : boolean;
 }
 
 const scrollbarjs = (function(){
@@ -130,10 +131,11 @@ const init = ( config?: IConfig ): IScrollbarProperties => {
 	return {
 		nativeHeight           : nativeHeight,
 		nativeWidth            : nativeWidth,
-		nativeDisplaces        : ( nativeHeight > 0 || nativeWidth > 0 ),
+		nativeDisplaces        : nativeHeight > 0 || nativeWidth > 0,
 		supportsWebkitStyling  : supportsWebkitStyling,
-		supportsMsHiding       : supportsMsHiding,
+		supportsMsHiding       : supportsMsOverflow,
 		supportsScrollbarWidth : supportsScrollbarWidth,
+		supportsNativeHiding   : supportsWebkitStyling || supportsMsOverflow || supportsScrollbarWidth,
 	};
 }
 
@@ -149,7 +151,7 @@ let nativeHeight = 0;
 // additionally, we check for some ways to hide the scrollbar natively (without killing scrolling like overflow:hidden does)
 // in these cases, putting a wrapper around to hide the scrollbars would not be required
 let supportsWebkitStyling  = false; // note that these don't seem to work on the body in mobile view
-let supportsMsHiding       = false;
+let supportsMsOverflow     = false;
 let supportsScrollbarWidth = false;
 
 (function(){ // scoping to pretent it didn't happen
@@ -188,7 +190,7 @@ let supportsScrollbarWidth = false;
 	}
 
 	const computedStyle = getComputedStyle( $size );
-	supportsMsHiding = computedStyle.msOverflowStyle === 'none';
+	supportsMsOverflow = computedStyle.msOverflowStyle === 'none';
 	// @ts-ignore property is still new
 	supportsScrollbarWidth = computedStyle.scrollbarWidth === 'none';
 

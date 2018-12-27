@@ -85,6 +85,7 @@ You can change some default values by passing an object to `scrollbarjs.init()`.
 - `supportsWebkitStyling: boolean` are `::-webkit-scrollbar` pseudo classes supported? [WebKit Blog](https://webkit.org/blog/363/styling-scrollbars/)
 - `supportsMsHiding: boolean` is `-ms-overflow-style` supported? [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/-ms-overflow-style)
 - `supportsScrollbarWidth: boolean` is `scrollbar-width` supported? [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-width)
+- `supportsNativeHiding: boolean` is any of the above supported? They all explicitly check for hiding the native scrollbar.
 
 ```javascript
 var scrollbarProperties = scrollbarjs.init({
