@@ -26,4 +26,4 @@ h1 {
 .resizable { resize: both; }
 
 img { display: block; } /* removes baseline margin at the bottom */
-#nowrap { white-space: nowrap; }
+.nowrap { white-space: nowrap; }
