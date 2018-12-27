@@ -1,4 +1,4 @@
-body {
+body, button {
 	margin: 0;
 	box-sizing: border-box;
 	font-size: 1.1rem;
@@ -27,3 +27,4 @@ h1 {
 
 img { display: block; } /* removes baseline margin at the bottom */
 .nowrap { white-space: nowrap; }
+#theme-selector { text-align: center; }

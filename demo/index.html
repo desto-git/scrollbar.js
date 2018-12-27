@@ -5,7 +5,7 @@
 	<title>scrollbar.js</title>
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="../src/scrollbar-basic.css">
+	<link rel="stylesheet" href="../src/scrollbar-basic.css" id="theme">
 </head>
 
 <body class="sbjs">
@@ -13,6 +13,13 @@
 	<h1>scrollbar.js</h1>
 
 	<div class="wrapper">
+
+		<p id="theme-selector">
+			Select a theme:
+			<button data-theme="basic">Basic</button>
+			<button data-theme="ios">iOS</button>
+		</p>
+
 		<div class="content scrollable resizable">
 			<p>This div is just a regular overflowing div. It has not been altered by scrollbar.js.</p>
 			<p>It can also be resized. No wait! It cannot be resized in IE, Edge and mobile browsers it seems! :(</p>
@@ -82,16 +89,6 @@
 			scrollbarjs.add( $elems[i] );
 		}
 	</script>
-
-	<script>
-		// add paragraph button
-		var pTarget = document.getElementById('p-target');
-		document.getElementById('add-p').addEventListener('click', function(){
-			addP( pTarget, 1 );
-		});
-		document.getElementById('clr-p').addEventListener('click', function(){
-			pTarget.innerHTML = '';
-		});
-	</script>
+	<script src="postscript.js"></script>
 </body>
 </html>

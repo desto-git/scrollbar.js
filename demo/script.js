@@ -21,9 +21,41 @@ for( var i = 0; i < $content.length; ++i ){
 	addP( $content[i], paragraphs.length );
 }
 
+
+
 // link issues
 var $a = document.getElementsByTagName('a');
 for( var i = 0; i < $a.length; ++i ){
 	if( $a[i].innerHTML.indexOf('#') === 0 )
 		$a[i].href = 'https://github.com/desto-git/scrollbar.js/issues/' + $a[i].innerHTML.substr(1);
 }
+
+
+
+// theme selection
+var $theme = document.getElementById('theme');
+var $sbjs = document.getElementsByClassName('sbjs');
+
+function selectTheme( themeName ){
+	$theme.href = '../src/scrollbar-' + themeName + '.css';
+}
+
+$theme.addEventListener('load', function(){
+	// when elements are added to scrollbarjs before styling is applied, the calculation of the thumb height cannot work correctly
+	// to help this, an update needs to be triggered. this is done by just scrolling by one pixel in this case
+	for( var i = 0; i < $sbjs.length; ++i ){
+		if( !$sbjs[i].classList.contains('scrollbarjs') ) continue;
+
+		var $target = $sbjs[i].children[0];
+		var scrollTop = $target.scrollTop;
+		console.log(scrollTop);
+		// add some delay, otherwise the change happens too fast for the update to notice
+		$target.scrollTop += 1;
+		requestAnimationFrame(function(){
+			$target.scrollTop -= 1; // in case the container was already scrolled to the bottom
+			requestAnimationFrame(function(){
+				$target.scrollTop = scrollTop;
+			});
+		});
+	}
+});
